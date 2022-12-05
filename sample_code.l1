@@ -1,0 +1,51 @@
+class Node {
+  fun Node(val) {
+    this.val = val;
+    this.prev = nil;
+  }
+}
+
+class List {
+  fun List() {
+    this.tail = nil;	
+  }
+
+  fun last() {
+    if (this.tail != nil)
+      return this.tail.val;
+  }
+
+  fun insert(val) {
+    var new = Node(val);
+    new.prev = this.tail;
+    this.tail = new;
+  }
+
+  fun remove() {
+    if (this.tail != nil)
+      this.tail = this.tail.prev;			
+  }
+
+  fun apply(f) {
+    for (var n = this.tail; n != nil; n = n.prev)
+      f(n.val);
+  }
+}
+
+var l = List();
+l.insert(1);
+print l.last();
+for (var i = 2; i < 10; i = i + 1)
+  l.insert(i);
+print l.last();
+print "";
+l.apply(fun (x) { print x; });
+print "";
+l.remove();
+print l.last();
+for (var i = 0; i < 7; i = i + 1)
+  l.remove();
+print l.last();
+l.remove();
+print l.tail;
+l.remove();
