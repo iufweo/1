@@ -32,6 +32,7 @@ on Windows 10.
 	cmake --build path_to_build_directory/
 
 **Tests must not be run using msys runtime**
+
 Some tests may "fail" due to Windows reordering stderr with stdout
 
 	path_to_build_directory/testdriver.exe path_to_build_directory/lox1.exe path_to_source_directory/r_test
