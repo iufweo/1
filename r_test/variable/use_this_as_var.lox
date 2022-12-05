@@ -1,0 +1,2 @@
+var this = "value";
+// expect: line 1: location: at 'this': expected identifier

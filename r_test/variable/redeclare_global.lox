@@ -1,0 +1,4 @@
+var a = "1";
+var a;
+print a;
+// expect: line 3: location: at 'a': uninitialized variable
