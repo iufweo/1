@@ -1,0 +1,72 @@
+var global = "global";
+
+class First {
+	fun f()
+	{
+		print global;
+		print this.msg;
+		this.test = "test";
+	}
+	fun g()
+	{
+		this.s.h();
+	}
+}
+
+class Second {
+	fun h()
+	{
+		print this.field;
+	}
+}
+
+var f1 = First();
+f1.msg = "first";
+f1.f();
+// expect: global
+// expect: first
+
+var f2 = First();
+f2.msg = "another";
+f2.f();
+// expect: global
+// expect: another
+f1.f();
+// expect: global
+// expect: first
+
+//print "";
+//print "";
+var save = f2.f;
+f2.f = f1.f;
+f1.f();
+// expect: global
+// expect: first
+f2.f();
+// expect: global
+// expect: first
+
+//print "";
+save();
+// expect: global
+// expect: another
+//print "";
+//print "";
+
+var save2;
+var save3;
+{
+	var f3 = First();
+	f3.msg = "test";
+	{
+		f3.s = Second();	
+		f3.s.field = "s field";
+		save3 = f3.g;
+	}
+	save2 = f3.f;
+}
+save2();
+// expect: global
+// expect: test
+save3();
+// expect: s field

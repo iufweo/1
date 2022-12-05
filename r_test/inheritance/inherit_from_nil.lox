@@ -1,0 +1,3 @@
+var Nil = nil;
+class Foo < Nil {}
+// expect: line 2: location: at 'Nil': expected class, got nil

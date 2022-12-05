@@ -1,0 +1,3 @@
+var d;
+d = nil;
+print d;	// expect: nil

@@ -1,0 +1,10 @@
+class Test {
+	fun Test()
+	{
+		if (true) {
+			for ( ; ; )
+				return 2;
+		}
+	}
+}
+// expect: line 6: location: at 'return': returning a value inside constructor

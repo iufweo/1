@@ -1,0 +1,2 @@
+super.none;
+// expect: line 1: location: at 'super': outside method scope

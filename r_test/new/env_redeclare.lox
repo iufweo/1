@@ -1,0 +1,9 @@
+var x = 5;
+var x;	// ok
+{
+	var y;
+	var y;
+}
+// expect: line 5: location: at 'y': static: redeclaration in non-global scope
+// expect: line 4: location: at 'y': static: previously declared here
+// expect: line 4: location: at 'y': declared but not used

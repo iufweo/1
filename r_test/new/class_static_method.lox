@@ -1,0 +1,11 @@
+class Base {
+	class fun f()
+	{
+		return 5;
+	}
+}
+
+class Derived < Base {
+}
+
+print Derived.f();	// expect: 5

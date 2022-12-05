@@ -1,0 +1,10 @@
+class Test {
+	fun used() {
+		print "ok";
+	}
+
+	fun unused() {
+	}
+}
+Test().used();
+// expect: ok

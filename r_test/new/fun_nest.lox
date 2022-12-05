@@ -1,0 +1,10 @@
+var f;
+{
+	var msg = "test";
+	fun test()
+	{
+		print msg;
+	}
+	f = test;
+}
+f(); // expect: test

@@ -1,0 +1,14 @@
+fun f(i)
+{
+	fun g()
+	{
+		fun h()
+		{
+			return i;
+		}
+		return h;
+	}
+	return g;
+}
+
+print f(3)()();	// expect: 3

@@ -1,0 +1,8 @@
+class Test {
+	fun f()
+	{
+	}
+}
+
+var t = Test();
+print t.f();	// expect: nil

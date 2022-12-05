@@ -1,0 +1,33 @@
+class Base {
+	fun Base(field)
+	{
+		this.field = field;
+	}
+
+	fun f()
+	{
+		return nil;
+	}
+} 
+
+class Derived < Base {
+	fun Derived(x, field)
+	{
+		this.x = x;
+		field;	// suppress resolver
+	}
+
+	fun g()
+	{
+		return this.x;
+	}
+}
+
+//print Derived(5).field;
+//print Derived(5).f();
+//print Derived.f();
+//print Derived.g();
+print Derived(5, "test").g();	// expect: 5
+//print Derived.g();
+print Base("test").f();		// expect: nil
+//print Derived(5)();

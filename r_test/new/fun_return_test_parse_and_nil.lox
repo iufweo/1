@@ -1,0 +1,13 @@
+fun f()
+{
+	return;
+}
+
+fun g()
+{
+	//return
+}
+
+f();
+print f();	// expect: nil
+print g();	// expect: nil
