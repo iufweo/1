@@ -1,0 +1,5 @@
+class Foo {
+  fun Foo() {
+    return "result"; // expect: line 3: location: at 'return': returning a value inside constructor
+  }
+}

@@ -1,0 +1,2 @@
+for (;;) class Foo {}
+// expect: line 1: location: at 'class': expected expression

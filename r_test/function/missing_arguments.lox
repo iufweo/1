@@ -1,0 +1,5 @@
+fun f(a, b)
+{ a; b; } // suppress resolver
+
+f(1);
+// expect: line 4: location: at ')': expected 2 arguments, got 1

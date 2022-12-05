@@ -1,0 +1,2 @@
+for (;;) var foo;
+// expect: line 1: location: at 'var': expected expression

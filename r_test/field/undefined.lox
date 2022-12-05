@@ -1,0 +1,4 @@
+class Foo {}
+var foo = Foo();
+
+foo.bar; // expect: line 4: location: at 'bar': undefined property

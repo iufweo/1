@@ -1,0 +1,2 @@
+undeclared1.bar // expect: line 1: location: at 'undeclared1': undeclared variable
+  = undeclared;

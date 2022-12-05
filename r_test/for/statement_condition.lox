@@ -1,0 +1,3 @@
+for (var a = 1; {}; a = a + 1) {}
+// expect: line 1: location: at '{': expected expression
+// expect: line 1: location: at ')': expected ';' after expression
