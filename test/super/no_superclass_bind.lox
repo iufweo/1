@@ -1,0 +1,8 @@
+class Base {
+  fun foo() {
+    super.doesNotExist;
+  }
+}
+
+Base().foo();
+// expect: line 3: location: at 'super': class does not have an ancestor

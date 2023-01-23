@@ -1,0 +1,10 @@
+class A {
+  fun method() {}
+}
+
+class B < A {
+  fun method() {
+    (super).method();
+  }
+}
+// expect: line 7: location: at ')': expected '.' after 'super'

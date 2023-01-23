@@ -1,0 +1,4 @@
+super.foo("bar");
+super.foo;
+// expect: line 1: location: at 'super': outside method scope
+// expect: line 2: location: at 'super': outside method scope

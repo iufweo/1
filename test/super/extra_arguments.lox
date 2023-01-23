@@ -1,0 +1,17 @@
+class Base {
+  fun foo(a, b) {
+    print "Base.foo(" + a + ", " + b + ")";
+  }
+}
+
+class Derived < Base {
+  fun foo() {
+    print "Derived.foo()";
+    super.foo("a", "b", "c", "d");
+  }
+}
+
+Derived().foo();
+// depends on IO
+// expect: Derived.foo()
+// expect: line 10: location: at ')': expected 2 arguments, got 4

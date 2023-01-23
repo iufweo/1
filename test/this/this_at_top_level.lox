@@ -1,0 +1,2 @@
+this;
+// expect: line 1: location: at 'this': outside method scope

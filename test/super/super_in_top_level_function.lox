@@ -1,0 +1,4 @@
+fun foo() {
+	super.bar();
+}
+// expect: line 2: location: at 'super': outside method scope

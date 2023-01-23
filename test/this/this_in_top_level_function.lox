@@ -1,0 +1,4 @@
+fun foo() {
+  this;
+}
+// expect: line 2: location: at 'this': outside method scope
