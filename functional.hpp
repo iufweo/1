@@ -11,6 +11,6 @@ struct Functional {
   const std::unique_ptr<const StmtList> listp;
 
   Functional() = delete;
-  Functional(std::list<Token> params, std::unique_ptr<const StmtList> &&listp);
+  Functional(std::list<Token> params, std::unique_ptr<const StmtList>&& listp);
   ~Functional();
 };

@@ -4,14 +4,12 @@
 // floating-point arithmetic
 #include <cmath>
 #include <memory>
-// measure run time
-//#include <chrono>
 // for readAll -- reading from a file
+#include <cassert>
 #include <fstream>
+#include <iostream>
 #include <optional>
 #include <variant>
-
-#include <fmt/core.h>
 
 #include "assert.hpp"
 #include "func.hpp"
@@ -35,9 +33,10 @@ bool Interp::floatcmp(double a, double b) {
   return diff <= std::max(std::abs(a), std::abs(b)) * relEps;
 }
 
-template <typename T> constexpr bool always_false_v = false;
+template <typename T>
+constexpr bool always_false_v = false;
 
-bool Interp::equality(const Ltype &left, const Ltype &right) {
+bool Interp::equality(const Ltype& left, const Ltype& right) {
   bool ret;
 
   std::visit(
@@ -58,7 +57,7 @@ bool Interp::equality(const Ltype &left, const Ltype &right) {
                              std::is_same_v<T, LfunPtr> ||
                              std::is_same_v<T, InstPtr> ||
                              std::is_same_v<T, ClassPtr>)
-            ret = !std::less()(x, y) && !std::less()(y, x);
+            ret = !std::less<T>()(x, y) && !std::less<T>()(y, x);
           else
             static_assert(always_false_v<T>);
         }
@@ -68,7 +67,7 @@ bool Interp::equality(const Ltype &left, const Ltype &right) {
   return ret;
 }
 
-Ltype Interp::visit(std::shared_ptr<const ExprBinary> expr) {
+Ltype Interp::visit(const ExprBinary* expr) {
   Ltype ret, left, right;
   ReclaimerCtx ctx(*this);
 
@@ -76,131 +75,131 @@ Ltype Interp::visit(std::shared_ptr<const ExprBinary> expr) {
   right = ctx.add(eval(expr->right));
 
   switch (expr->oper.type) {
-  case MINUS:
-    checkNumberOperands(expr->oper, left, right);
-    ret = std::get<double>(left) - std::get<double>(right);
-    break;
-  case STAR:
-    checkNumberOperands(expr->oper, left, right);
-    ret = std::get<double>(left) * std::get<double>(right);
-    break;
-  case SLASH:
-    checkNumberOperands(expr->oper, left, right);
-    if (floatcmp(std::get<double>(right), 0.0))
-      throw RuntimeError(expr->oper, "division by zero");
-    ret = std::get<double>(left) / std::get<double>(right);
-    break;
-  case PERCENT:
-    checkNumberOperands(expr->oper, left, right);
-    if (floatcmp(std::get<double>(right), 0.0))
-      throw RuntimeError(expr->oper, "division by zero");
+    case MINUS:
+      checkNumberOperands(expr->oper, left, right);
+      ret = std::get<double>(left) - std::get<double>(right);
+      break;
+    case STAR:
+      checkNumberOperands(expr->oper, left, right);
+      ret = std::get<double>(left) * std::get<double>(right);
+      break;
+    case SLASH:
+      checkNumberOperands(expr->oper, left, right);
+      if (floatcmp(std::get<double>(right), 0.0))
+        throw RuntimeError(expr->oper, "division by zero");
+      ret = std::get<double>(left) / std::get<double>(right);
+      break;
+    case PERCENT:
+      checkNumberOperands(expr->oper, left, right);
+      if (floatcmp(std::get<double>(right), 0.0))
+        throw RuntimeError(expr->oper, "division by zero");
 
-    ret = std::fmod(std::get<double>(left), std::get<double>(right));
-    break;
-  case PLUS:
-    if (std::holds_alternative<double>(left) &&
-        std::holds_alternative<double>(right))
-      ret = std::get<double>(left) + std::get<double>(right);
-    else if (std::holds_alternative<Lstring>(left) &&
-             std::holds_alternative<Lstring>(right))
-      ret = std::get<Lstring>(left) + std::get<Lstring>(right);
-    else
-      throw RuntimeError(expr->oper,
-                         "operands must be numbers or strings, got: " +
-                             typeToString(left) + ", " + typeToString(right));
-    break;
-  case EQUAL_EQUAL:
-    ret = equality(left, right);
-    break;
-  case BANG_EQUAL:
-    ret = !equality(left, right);
-    break;
-  case LESS:
-    checkNumberOperands(expr->oper, left, right);
-    ret = std::get<double>(left) < std::get<double>(right);
-    break;
-  case LESS_EQUAL:
-    checkNumberOperands(expr->oper, left, right);
-    ret = std::get<double>(left) <= std::get<double>(right);
-    break;
-  case GREATER:
-    checkNumberOperands(expr->oper, left, right);
-    ret = std::get<double>(left) > std::get<double>(right);
-    break;
-  case GREATER_EQUAL:
-    checkNumberOperands(expr->oper, left, right);
-    ret = std::get<double>(left) >= std::get<double>(right);
-    break;
-  default:
-    myAssert(expr->oper, "unhandled binary operator");
-    break;
+      ret = std::fmod(std::get<double>(left), std::get<double>(right));
+      break;
+    case PLUS:
+      if (std::holds_alternative<double>(left) &&
+          std::holds_alternative<double>(right))
+        ret = std::get<double>(left) + std::get<double>(right);
+      else if (std::holds_alternative<Lstring>(left) &&
+               std::holds_alternative<Lstring>(right))
+        ret = std::get<Lstring>(left) + std::get<Lstring>(right);
+      else
+        throw RuntimeError(expr->oper,
+                           "operands must be numbers or strings, got: " +
+                               typeToString(left) + ", " + typeToString(right));
+      break;
+    case EQUAL_EQUAL:
+      ret = equality(left, right);
+      break;
+    case BANG_EQUAL:
+      ret = !equality(left, right);
+      break;
+    case LESS:
+      checkNumberOperands(expr->oper, left, right);
+      ret = std::get<double>(left) < std::get<double>(right);
+      break;
+    case LESS_EQUAL:
+      checkNumberOperands(expr->oper, left, right);
+      ret = std::get<double>(left) <= std::get<double>(right);
+      break;
+    case GREATER:
+      checkNumberOperands(expr->oper, left, right);
+      ret = std::get<double>(left) > std::get<double>(right);
+      break;
+    case GREATER_EQUAL:
+      checkNumberOperands(expr->oper, left, right);
+      ret = std::get<double>(left) >= std::get<double>(right);
+      break;
+    default:
+      myAssert(expr->oper, "unhandled binary operator");
+      break;
   }
 
   return ret;
 }
 
-Ltype Interp::visit(std::shared_ptr<const ExprComma> expr) {
+Ltype Interp::visit(const ExprComma* expr) {
   static_cast<void>(eval(expr->left));
   return eval(expr->right);
 }
 
-Ltype Interp::visit(std::shared_ptr<const ExprLogical> expr) {
+Ltype Interp::visit(const ExprLogical* expr) {
   Ltype ret, left, right;
   ReclaimerCtx ctx(*this);
 
   left = ctx.add(eval(expr->left));
 
   switch (expr->oper.type) {
-  case OR:
-    if (isTruthful(left))
-      ret = left;
-    else
-      ret = eval(expr->right);
-    break;
-  case AND:
-    if (!isTruthful(left))
-      ret = left;
-    else
-      ret = eval(expr->right);
-    break;
-  default:
-    myAssert(expr->oper, "unhandled logical operator");
-    break;
+    case OR:
+      if (isTruthful(left))
+        ret = left;
+      else
+        ret = eval(expr->right);
+      break;
+    case AND:
+      if (!isTruthful(left))
+        ret = left;
+      else
+        ret = eval(expr->right);
+      break;
+    default:
+      myAssert(expr->oper, "unhandled logical operator");
+      break;
   }
 
   return ret;
 }
 
-Ltype Interp::visit(std::shared_ptr<const ExprGrouping> expr) {
+Ltype Interp::visit(const ExprGrouping* expr) {
   return eval(expr->exprp);
 }
 
-Ltype Interp::visit(std::shared_ptr<const ExprLiteral> expr) {
+Ltype Interp::visit(const ExprLiteral* expr) {
   return expr->value;
 }
 
-Ltype Interp::visit(std::shared_ptr<const ExprUnary> expr) {
+Ltype Interp::visit(const ExprUnary* expr) {
   Ltype right, ret;
 
   right = eval(expr->exprp);
 
   switch (expr->oper.type) {
-  case MINUS:
-    checkNumberOperands(expr->oper, right);
-    ret = -std::get<double>(right);
-    break;
-  case BANG:
-    ret = !isTruthful(right);
-    break;
-  default:
-    myAssert(expr->oper, "unhandled unary operator");
-    break;
+    case MINUS:
+      checkNumberOperands(expr->oper, right);
+      ret = -std::get<double>(right);
+      break;
+    case BANG:
+      ret = !isTruthful(right);
+      break;
+    default:
+      myAssert(expr->oper, "unhandled unary operator");
+      break;
   }
 
   return ret;
 }
 
-Ltype Interp::visit(std::shared_ptr<const ExprTern> expr) {
+Ltype Interp::visit(const ExprTern* expr) {
   ReclaimerCtx ctx(*this);
   Ltype res;
 
@@ -210,14 +209,14 @@ Ltype Interp::visit(std::shared_ptr<const ExprTern> expr) {
   return eval(expr->elsep);
 }
 
-Ltype Interp::visit(std::shared_ptr<const ExprVar> expr) {
+Ltype Interp::visit(const ExprVar* expr) {
   return lookupVariable(expr->token, expr);
 }
 
-Ltype Interp::visit(std::shared_ptr<const ExprAssign> expr) {
+Ltype Interp::visit(const ExprAssign* expr) {
   Ltype value;
 
-  auto distance = locals.find(expr.get());
+  auto distance = locals.find(expr);
   value = eval(expr->exprp);
   if (distance != locals.end())
     envp->assignAt(expr->token, value, distance->second);
@@ -226,7 +225,7 @@ Ltype Interp::visit(std::shared_ptr<const ExprAssign> expr) {
   return value;
 }
 
-Ltype Interp::visit(std::shared_ptr<const ExprCall> expr) {
+Ltype Interp::visit(const ExprCall* expr) {
   Ltype callee;
   FunPtr ptr;
   std::list<Ltype> evaluatedArgs;
@@ -253,12 +252,12 @@ Ltype Interp::visit(std::shared_ptr<const ExprCall> expr) {
                                              " arguments, got " +
                                              std::to_string(expr->args.size()));
 
-  for (const std::shared_ptr<const Expr> &exprp : expr->args)
+  for (const std::shared_ptr<const Expr>& exprp : expr->args)
     evaluatedArgs.push_back(ctx.add(eval(exprp)));
   return ptr->call(*this, evaluatedArgs);
 }
 
-Ltype Interp::visit(std::shared_ptr<const ExprGet> expr) {
+Ltype Interp::visit(const ExprGet* expr) {
   Ltype obj;
   std::optional<Ltype> ret;
   ReclaimerCtx ctx(*this);
@@ -277,7 +276,7 @@ Ltype Interp::visit(std::shared_ptr<const ExprGet> expr) {
   return ret.value();
 }
 
-Ltype Interp::visit(std::shared_ptr<const ExprSet> expr) {
+Ltype Interp::visit(const ExprSet* expr) {
   Ltype obj;
   Ltype rvalue;
   ReclaimerCtx ctx(*this);
@@ -291,16 +290,16 @@ Ltype Interp::visit(std::shared_ptr<const ExprSet> expr) {
   return rvalue;
 }
 
-Ltype Interp::visit(std::shared_ptr<const ExprThis> expr) {
+Ltype Interp::visit(const ExprThis* expr) {
   return lookupVariable(expr->token, expr);
 }
 
-Ltype Interp::visit(std::shared_ptr<const ExprSuper> expr) {
+Ltype Interp::visit(const ExprSuper* expr) {
   ClassPtr superPtr;
-  std::optional<Lfunc *> method;
+  std::optional<Lfunc*> method;
   std::size_t distance;
 
-  distance = locals[expr.get()];
+  distance = locals[expr];
   superPtr = std::get<ClassPtr>(envp->getAt(expr->token, distance));
   if ((method = superPtr->getMethod(expr->method.lexeme)).has_value())
     return method.value()->bind(
@@ -321,48 +320,51 @@ Ltype Interp::eval(std::shared_ptr<const Expr> expr) {
   return expr->accept(*this);
 }
 
-bool Interp::isTruthful(const Ltype &obj) const {
+bool Interp::isTruthful(const Ltype& obj) const {
   if ((std::holds_alternative<bool>(obj) && std::get<bool>(obj) == 0) ||
       std::holds_alternative<Lnil>(obj))
     return 0;
   return 1;
 }
 
-void Interp::checkNumberOperands(Token oper, const Ltype &obj) const {
+void Interp::checkNumberOperands(Token oper, const Ltype& obj) const {
   if (!std::holds_alternative<double>(obj))
     throw RuntimeError(oper,
                        "operand must be a number, got: " + typeToString(obj));
 }
 
-void Interp::checkNumberOperands(Token oper, const Ltype &left,
-                                 const Ltype &right) const {
+void Interp::checkNumberOperands(Token oper,
+                                 const Ltype& left,
+                                 const Ltype& right) const {
   if (!std::holds_alternative<double>(left) ||
       !std::holds_alternative<double>(right))
-    throw RuntimeError(oper,
-                       "operands must be numbers, got: " + typeToString(left) +
-                           ", " + typeToString(right));
+    throw RuntimeError(
+        oper, "operands must be numbers, got: " + typeToString(left) + ", " +
+                  typeToString(right));
 }
 
-void Interp::interpret(const std::list<std::shared_ptr<const Stmt>> &list) {
+void Interp::interpret(const std::list<std::shared_ptr<const Stmt>>& list) {
   try {
-    for (const std::shared_ptr<const Stmt> &s : list)
+    for (const std::shared_ptr<const Stmt>& s : list)
       execute(*s.get());
-  } catch (RuntimeError &e) {
+  } catch (RuntimeError& e) {
     handleRuntimeError(e);
   }
 }
 
-void Interp::execute(const Stmt &stmt) { stmt.accept(*this); }
+void Interp::execute(const Stmt& stmt) {
+  stmt.accept(*this);
+}
 
-void Interp::execute(const StmtList &stmt, Env *setEnv) {
-  Env *save;
+void Interp::execute(const StmtList& stmt, Env* setEnv) {
+  Env* save;
 
   save = envp;
   envp = setEnv;
-  for (const std::shared_ptr<const Stmt> &p : stmt.stmts) {
+  for (const std::shared_ptr<const Stmt>& p : stmt.stmts) {
     try {
       execute(*p.get());
-    } catch (std::exception &ex) {
+    } catch (std::exception& ex) {
       envp = save;
       throw;
     }
@@ -370,20 +372,20 @@ void Interp::execute(const StmtList &stmt, Env *setEnv) {
   envp = save;
 }
 
-void Interp::visit(const StmtList &stmt) {
+void Interp::visit(const StmtList& stmt) {
   ReclaimerCtx ctx(*this);
   execute(stmt, alloc<Env>(ctx, envp));
 }
 
 Interp::Env::Env() : enclosing(nullptr), m{} {}
 
-Interp::Env::Env(Env *enclosing) : enclosing(enclosing), m{} {}
+Interp::Env::Env(Env* enclosing) : enclosing(enclosing), m{} {}
 
-void Interp::Env::def(const Token &token, std::optional<Ltype> obj) {
+void Interp::Env::def(const Token& token, std::optional<Ltype> obj) {
   // allow redeclaring in global -- for REPL
   if (enclosing != nullptr) {
-    // case 1:		case 2:
-    // var x;		var x;	== nullopt
+    // case 1:	case 2:
+    // var x;	var x;	== nullopt
     // var x = 5;	var x;	== nullopt again
     auto ret = m.find(token.lexeme);
     if (ret != m.end() && (ret->second != std::nullopt || !obj.has_value()))
@@ -392,7 +394,7 @@ void Interp::Env::def(const Token &token, std::optional<Ltype> obj) {
   m[token.lexeme] = obj;
 }
 
-Ltype Interp::Env::get(const Token &token) const {
+Ltype Interp::Env::get(const Token& token) const {
   auto ret = m.find(token.lexeme);
   if (ret == m.end()) {
     if (enclosing != nullptr)
@@ -406,12 +408,22 @@ Ltype Interp::Env::get(const Token &token) const {
   return ret->second.value();
 }
 
-Ltype Interp::Env::getAt(const Token &token, std::size_t distance) {
-  return ancestor(distance)->get(token);
+Ltype Interp::Env::assertGet(const Token& token) const {
+  auto ret = m.find(token.lexeme);
+  assert(ret != m.end());
+  if (!ret->second.has_value()) {
+    throw RuntimeError(token, "uninitialized variable");
+  }
+
+  return ret->second.value();
 }
 
-Interp::Env *Interp::Env::ancestor(std::size_t distance) {
-  Env *env;
+Ltype Interp::Env::getAt(const Token& token, std::size_t distance) {
+  return ancestor(distance)->assertGet(token);
+}
+
+Interp::Env* Interp::Env::ancestor(std::size_t distance) {
+  Env* env;
   std::size_t i;
 
   for (i = 0, env = this; i < distance; i++)
@@ -419,7 +431,7 @@ Interp::Env *Interp::Env::ancestor(std::size_t distance) {
   return env;
 }
 
-void Interp::Env::assign(const Token &token, Ltype obj) {
+void Interp::Env::assign(const Token& token, Ltype obj) {
   auto ret = m.find(token.lexeme);
   if (ret == m.end()) {
     if (enclosing != nullptr) {
@@ -432,32 +444,48 @@ void Interp::Env::assign(const Token &token, Ltype obj) {
   ret->second = obj;
 }
 
-void Interp::Env::assignAt(const Token &token, Ltype obj,
+void Interp::Env::assignAt(const Token& token,
+                           Ltype obj,
                            std::size_t distance) {
   ancestor(distance)->assign(token, obj);
 }
 
-void Interp::visit(const StmtExpr &stmt) { eval(stmt.exprp); }
-
-void Interp::visit(const StmtPrint &stmt) {
-  fmt::print("{}\n", valueToString(eval(stmt.exprp)));
+void Interp::visit(const StmtExpr& stmt) {
+  eval(stmt.exprp);
 }
 
-void Interp::visit(const StmtLoop &stmt) {
+void Interp::visit(const StmtPrint& stmt) {
+  std::cout << valueToString(eval(stmt.exprp)) << '\n';
+}
+
+void Interp::visit(const StmtLoop& stmt) {
   ReclaimerCtx ctx(*this);
 
-  while (isTruthful(ctx.add(eval(stmt.condp)))) {
-    try {
-      execute(*stmt.stmtp);
-    } catch (Break &exception) {
-      break;
-    } catch (Continue &exception) {
-      continue;
+  if (stmt.exprp == nullptr) {
+    while (isTruthful(ctx.add(eval(stmt.condp)))) {
+      try {
+        execute(*stmt.body);
+      } catch (Break& exception) {
+        break;
+      } catch (Continue& exception) {
+        ;
+      }
+    }
+  } else {
+    while (isTruthful(ctx.add(eval(stmt.condp)))) {
+      try {
+        execute(*stmt.body);
+      } catch (Break& exception) {
+        break;
+      } catch (Continue& exception) {
+        ;
+      }
+      ctx.add(eval(stmt.exprp));
     }
   }
 }
 
-void Interp::visit(const StmtVar &stmt) {
+void Interp::visit(const StmtVar& stmt) {
   // always set variables to uninitialized before attempting to evaluate
   // the possible initializing expression. This makes weird code in global
   // scope like the following erroneous
@@ -467,7 +495,7 @@ void Interp::visit(const StmtVar &stmt) {
     envp->def(stmt.token, eval(stmt.exprp));
 }
 
-void Interp::visit(const StmtIf &stmt) {
+void Interp::visit(const StmtIf& stmt) {
   ReclaimerCtx ctx(*this);
 
   if (isTruthful(ctx.add(eval(stmt.condp))))
@@ -476,17 +504,17 @@ void Interp::visit(const StmtIf &stmt) {
     execute(*stmt.elseBranch);
 }
 
-void Interp::visit(const StmtLoopFlow &stmt) {
+void Interp::visit(const StmtLoopFlow& stmt) {
   switch (stmt.token.type) {
-  case BREAK:
-    throw Interp::Break();
-    break;
-  case CONTINUE:
-    throw Interp::Continue();
-    break;
-  default:
-    myAssert(stmt.token, "unhandled loop flow control statement");
-    break;
+    case BREAK:
+      throw Interp::Break();
+      break;
+    case CONTINUE:
+      throw Interp::Continue();
+      break;
+    default:
+      myAssert(stmt.token, "unhandled loop flow control statement");
+      break;
   }
 }
 
@@ -496,7 +524,7 @@ void Interp::visit(std::shared_ptr<const StmtFun> stmtp) {
   envp->def(stmtp->token, alloc<Lfunc>(ctx, stmtp, envp, false));
 }
 
-void Interp::visit(const StmtReturn &stmt) {
+void Interp::visit(const StmtReturn& stmt) {
   Ltype retVal;
 
   // implicitly return nil by default
@@ -507,14 +535,14 @@ void Interp::visit(const StmtReturn &stmt) {
   throw Interp::Return(retVal);
 }
 
-void Interp::visit(const StmtClass &stmt) {
+void Interp::visit(const StmtClass& stmt) {
   Ltype obj;
   ClassPtr superPtr;
-  std::unordered_map<std::string, Lfunc *> methods, staticMethods;
+  std::unordered_map<std::string, Lfunc*> methods, staticMethods;
   std::size_t ctorArity;
   ClassPtr cptr;
-  Interp::Env *enclose;
-  Env *save;
+  Interp::Env* enclose;
+  Env* save;
 
   ReclaimerCtx ctx(*this);
 
@@ -535,9 +563,9 @@ void Interp::visit(const StmtClass &stmt) {
     envp = enclose;
   }
 
-  for (const std::shared_ptr<const StmtFun> &ptr : stmt.methods)
+  for (const std::shared_ptr<const StmtFun>& ptr : stmt.methods)
     methods[ptr->token.lexeme] = alloc<Lfunc>(ctx, ptr, envp, false);
-  for (const std::shared_ptr<const StmtFun> &ptr : stmt.staticMethods)
+  for (const std::shared_ptr<const StmtFun>& ptr : stmt.staticMethods)
     staticMethods[ptr->token.lexeme] = alloc<Lfunc>(ctx, ptr, envp, false);
   // look for optional ctor definition
   if (stmt.ctor != nullptr) {
@@ -553,7 +581,7 @@ void Interp::visit(const StmtClass &stmt) {
   envp->def(stmt.token, cptr);
 }
 
-void Interp::handleRuntimeError(RuntimeError &ex) {
+void Interp::handleRuntimeError(RuntimeError& ex) {
   error(ex.token, ex.what());
   hadRuntimeError = 1;
 }
@@ -585,25 +613,20 @@ void Interp::testScanner(std::string inputStr) {
   Scanner s(inputStr);
 
   for (Token t : s.scanTokens())
-    fmt::print("{}\n", std::string(t));
+    std::cout << std::string(t) << '\n';
 }
 
 void Interp::runPrompt() {
   std::string inputStr;
 
   while (1) {
-    fmt::print("> ");
+    std::cout << "> ";
     std::getline(std::cin, inputStr);
     if (inputStr.size() == 0) {
-      fmt::print("\n");
+      std::cout << '\n';
       break;
     }
-
-    //auto start = std::chrono::steady_clock::now();
     run(inputStr);
-    //std::chrono::duration<float> elapsed =
-    //				std::chrono::steady_clock::now() - start;
-    //fmt::print("Elapsed time: {:.4f}s\n", elapsed.count());
     hadError = 0;
   }
 }
@@ -617,12 +640,7 @@ void Interp::runFile(std::string path) {
 
   input = readAll(inputFileStream);
 
-  //auto start = std::chrono::steady_clock::now();
   run(input);
-  //testScanner(input);
-  //std::chrono::duration<float> elapsed =
-  //				std::chrono::steady_clock::now() - start;
-  //fmt::print("Elapsed time: {:.4f}s\n", elapsed.count());
 }
 
 bool Interp::hadError;
@@ -645,34 +663,35 @@ void Interp::report(Token token, std::string msg) {
     report(token.lineNum, "at '" + token.lexeme + "'", msg);
 }
 
-void Interp::report(std::size_t lineNum, std::string location,
+void Interp::report(std::size_t lineNum,
+                    std::string location,
                     std::string msg) {
-  fmt::print(stderr, "line {}: location: {}: {}\n", lineNum, location, msg);
+  std::cerr << "line " << lineNum << ": location: " << location << ": " << msg
+            << '\n';
 }
 
 Interp::Interp() : envp(&global), heapSize(0) {
-  envp->def(Token(Token::Type::EOFF, "clock", "clock", 0),
-            Clock::get());
-  //	global.isReachable = 1;
+  envp->def(Token(Token::Type::EOFF, "clock", "clock", 0), Clock::get());
 }
 
-Interp::~Interp() { reclaim(); }
+Interp::~Interp() {
+  reclaim();
+}
 
-void Interp::resolve(const Expr *expr, std::size_t distance) {
+void Interp::resolve(const Expr* expr, std::size_t distance) {
   locals[expr] = distance;
 }
 
-Ltype Interp::lookupVariable(const Token &token,
-                             std::shared_ptr<const Expr> expr) {
-  auto distance = locals.find(expr.get());
+Ltype Interp::lookupVariable(const Token& token, const Expr* expr) {
+  auto distance = locals.find(expr);
   if (distance != locals.end())
     return envp->getAt(token, distance->second);
   return global.get(token);
 }
 
-void Interp::mark(Env *env) {
+void Interp::mark(Env* env) {
   env->isReachable = 1;
-  for (auto &[_, optObj] : env->m) {
+  for (auto& [_, optObj] : env->m) {
     if (optObj.has_value())
       markLtype(optObj.value());
   }
@@ -680,16 +699,16 @@ void Interp::mark(Env *env) {
     mark(env->enclosing);
 }
 
-void Interp::mark(Lfunc *func) {
+void Interp::mark(Lfunc* func) {
   func->isReachable = 1;
   mark(func->enclosing);
 }
 
-void Interp::mark(Lclass *lclass) {
+void Interp::mark(Lclass* lclass) {
   lclass->isReachable = 1;
-  for (auto &[_, method] : lclass->methods)
+  for (auto& [_, method] : lclass->methods)
     mark(method);
-  for (auto &[_, staticMethod] : lclass->staticMethods)
+  for (auto& [_, staticMethod] : lclass->staticMethods)
     mark(staticMethod);
   if (lclass->base != nullptr) {
     mark(lclass->base);
@@ -697,19 +716,18 @@ void Interp::mark(Lclass *lclass) {
   }
 }
 
-void Interp::mark(Linstance *obj) {
+void Interp::mark(Linstance* obj) {
   obj->isReachable = 1;
-  for (auto &[_, lobj] : obj->properties)
+  for (auto& [_, lobj] : obj->properties)
     markLtype(lobj);
   mark(obj->lclass);
 }
 
-void Interp::markLtype(Ltype &l) {
+void Interp::markLtype(Ltype& l) {
   std::visit(
       [this](auto x) -> void {
         using T = decltype(x);
-
-        if constexpr (std::is_convertible_v<T, RunEnt *>) {
+        if constexpr (std::is_convertible_v<T, RunEnt*>) {
           if (!x->isReachable)
             mark(x);
         }
@@ -718,11 +736,6 @@ void Interp::markLtype(Ltype &l) {
 }
 
 void Interp::reclaim() {
-  //	std::size_t previousAllocatedCount, previousHeapSize;
-
-  //	previousAllocatedCount = traced.size();
-  //	previousHeapSize = heapSize;
-
   auto it = traced.begin();
   auto prev = it;
   while (it != traced.end()) {
@@ -737,9 +750,6 @@ void Interp::reclaim() {
         },
         *prev);
   }
-  //	fmt::print(stderr, "reclaimed: {}, {}\n",
-  //					previousAllocatedCount - traced.size(),
-  //						previousHeapSize - heapSize);
 }
 
 void Interp::unmark() {

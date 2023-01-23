@@ -1,12 +1,11 @@
 #pragma once
 
 class RunEnt {
-public:
+ public:
   bool isReachable;
 
-public:
+ public:
   RunEnt() : isReachable(0) {}
 
   void unmarkSelf() { isReachable = 0; }
-
 };

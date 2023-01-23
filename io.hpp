@@ -2,4 +2,4 @@
 #include <fstream>
 #include <string>
 
-std::string readAll(std::ifstream &is);
+std::string readAll(std::ifstream& is);

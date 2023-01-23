@@ -1,19 +1,19 @@
+#include <iostream>
 #include <source_location>
 #include <string>
-
-#include <fmt/core.h>
 
 #include "token.hpp"
 
 #include "assert.hpp"
 
-void myAssert(const Token &token, std::string msg, std::source_location loc) {
-  fmt::print(stderr, "{}:{} {}:\n", loc.file_name(), loc.line(),
-             loc.function_name());
+void myAssert(const Token& token, std::string msg, std::source_location loc) {
+  std::cerr << loc.file_name() << ':' << loc.line() << ' '
+            << loc.function_name() << ":\n";
   if (token.type == Token::Type::EOFF)
-    fmt::print(stderr, "line {}: location: at end: {}\n", token.lineNum, msg);
+    std::cerr << "line " << token.lineNum << ": location: at end: " << msg
+              << '\n';
   else
-    fmt::print(stderr, "line {}: location: at '{}': {}\n", token.lineNum,
-               token.lexeme, msg);
+    std::cerr << "line " << token.lineNum << ": location: " << token.lexeme
+              << ": " << msg << '\n';
   std::exit(1);
 }

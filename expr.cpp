@@ -2,47 +2,38 @@
 
 #include "expr.hpp"
 
-ExprBinary::ExprBinary(std::shared_ptr<const Expr> left, Token oper,
+ExprBinary::ExprBinary(std::shared_ptr<const Expr> left,
+                       Token oper,
                        std::shared_ptr<const Expr> right)
     : left(left), oper(oper), right(right) {}
 
-ExprBinary::~ExprBinary() {
-  //	delete left;
-  //	delete right;
-}
+ExprBinary::~ExprBinary() {}
 
-Ltype ExprBinary::accept(ExprVisitor &v) const {
-  return v.visit(
-      std::static_pointer_cast<const ExprBinary>(shared_from_this()));
+Ltype ExprBinary::accept(ExprVisitor& v) const {
+  return v.visit(this);
 }
 
 ExprGrouping::ExprGrouping(std::shared_ptr<const Expr> exprp) : exprp(exprp) {}
 
-ExprGrouping::~ExprGrouping() {
-  //	delete exprp;
-}
+ExprGrouping::~ExprGrouping() {}
 
-Ltype ExprGrouping::accept(ExprVisitor &v) const {
-  return v.visit(
-      std::static_pointer_cast<const ExprGrouping>(shared_from_this()));
+Ltype ExprGrouping::accept(ExprVisitor& v) const {
+  return v.visit(this);
 }
 
 ExprLiteral::ExprLiteral(Ltype value) : value(value) {}
 
-Ltype ExprLiteral::accept(ExprVisitor &v) const {
-  return v.visit(
-      std::static_pointer_cast<const ExprLiteral>(shared_from_this()));
+Ltype ExprLiteral::accept(ExprVisitor& v) const {
+  return v.visit(this);
 }
 
 ExprUnary::ExprUnary(Token oper, std::shared_ptr<const Expr> exprp)
     : oper(oper), exprp(exprp) {}
 
-ExprUnary::~ExprUnary() {
-  //	delete exprp;
-}
+ExprUnary::~ExprUnary() {}
 
-Ltype ExprUnary::accept(ExprVisitor &v) const {
-  return v.visit(std::static_pointer_cast<const ExprUnary>(shared_from_this()));
+Ltype ExprUnary::accept(ExprVisitor& v) const {
+  return v.visit(this);
 }
 
 ExprTern::ExprTern(std::shared_ptr<const Expr> cond,
@@ -50,114 +41,97 @@ ExprTern::ExprTern(std::shared_ptr<const Expr> cond,
                    std::shared_ptr<const Expr> elsep)
     : cond(cond), thenp(thenp), elsep(elsep) {}
 
-ExprTern::~ExprTern() {
-  //	delete cond;
-  //	delete thenp;
-  //	delete elsep;
-}
+ExprTern::~ExprTern() {}
 
-Ltype ExprTern::accept(ExprVisitor &v) const {
-  return v.visit(std::static_pointer_cast<const ExprTern>(shared_from_this()));
+Ltype ExprTern::accept(ExprVisitor& v) const {
+  return v.visit(this);
 }
 
 ExprVar::ExprVar(Token token) : token(token) {}
 
-Ltype ExprVar::accept(ExprVisitor &v) const {
-  return v.visit(std::static_pointer_cast<const ExprVar>(shared_from_this()));
+Ltype ExprVar::accept(ExprVisitor& v) const {
+  return v.visit(this);
 }
 
 ExprAssign::ExprAssign(Token token, std::shared_ptr<const Expr> exprp)
     : token(token), exprp(exprp) {}
 
-ExprAssign::~ExprAssign() {
-  //	delete exprp;
+ExprAssign::~ExprAssign() {}
+
+Ltype ExprAssign::accept(ExprVisitor& v) const {
+  return v.visit(this);
 }
 
-Ltype ExprAssign::accept(ExprVisitor &v) const {
-  return v.visit(
-      std::static_pointer_cast<const ExprAssign>(shared_from_this()));
-}
-
-ExprCall::ExprCall(std::shared_ptr<const Expr> exprp, Token savedParen,
-                   std::list<std::shared_ptr<const Expr>> &&args)
+ExprCall::ExprCall(std::shared_ptr<const Expr> exprp,
+                   Token savedParen,
+                   std::list<std::shared_ptr<const Expr>>&& args)
     : exprp(exprp), savedParen(savedParen), args(std::move(args)) {}
 
-ExprCall::~ExprCall() {
-  //	delete exprp;
-}
+ExprCall::~ExprCall() {}
 
-Ltype ExprCall::accept(ExprVisitor &v) const {
-  return v.visit(std::static_pointer_cast<const ExprCall>(shared_from_this()));
+Ltype ExprCall::accept(ExprVisitor& v) const {
+  return v.visit(this);
 }
 
 ExprGet::ExprGet(std::shared_ptr<const Expr> exprp, Token token)
     : exprp(exprp), token(token) {}
 
-ExprGet::~ExprGet() {
-  //	delete exprp;
+ExprGet::~ExprGet() {}
+
+Ltype ExprGet::accept(ExprVisitor& v) const {
+  return v.visit(this);
 }
 
-Ltype ExprGet::accept(ExprVisitor &v) const {
-  return v.visit(std::static_pointer_cast<const ExprGet>(shared_from_this()));
-}
-
-ExprSet::ExprSet(std::shared_ptr<const ExprGet> get, Token token,
+ExprSet::ExprSet(std::shared_ptr<const ExprGet> get,
+                 Token token,
                  std::shared_ptr<const Expr> exprp)
     : get(get), token(token), exprp(exprp) {}
 
-ExprSet::~ExprSet() {
-  //	delete get;
-  //	delete exprp;
-}
+ExprSet::~ExprSet() {}
 
-Ltype ExprSet::accept(ExprVisitor &v) const {
-  return v.visit(std::static_pointer_cast<const ExprSet>(shared_from_this()));
+Ltype ExprSet::accept(ExprVisitor& v) const {
+  return v.visit(this);
 }
 
 ExprThis::ExprThis(Token token) : token(token) {}
 
-Ltype ExprThis::accept(ExprVisitor &v) const {
-  return v.visit(std::static_pointer_cast<const ExprThis>(shared_from_this()));
+Ltype ExprThis::accept(ExprVisitor& v) const {
+  return v.visit(this);
 }
 
 ExprSuper::ExprSuper(Token token, Token method)
     : token(token), method(method) {}
 
-Ltype ExprSuper::accept(ExprVisitor &v) const {
-  return v.visit(std::static_pointer_cast<const ExprSuper>(shared_from_this()));
+Ltype ExprSuper::accept(ExprVisitor& v) const {
+  return v.visit(this);
 }
 
-ExprComma::ExprComma(std::shared_ptr<const Expr> left, Token oper,
+ExprComma::ExprComma(std::shared_ptr<const Expr> left,
+                     Token oper,
                      std::shared_ptr<const Expr> right)
     : left(left), oper(oper), right(right) {}
 
-ExprComma::~ExprComma() {
-  //	delete left;
-  //	delete right;
+ExprComma::~ExprComma() {}
+
+Ltype ExprComma::accept(ExprVisitor& v) const {
+  return v.visit(this);
 }
 
-Ltype ExprComma::accept(ExprVisitor &v) const {
-  return v.visit(std::static_pointer_cast<const ExprComma>(shared_from_this()));
-}
-
-ExprLogical::ExprLogical(std::shared_ptr<const Expr> left, Token oper,
+ExprLogical::ExprLogical(std::shared_ptr<const Expr> left,
+                         Token oper,
                          std::shared_ptr<const Expr> right)
     : left(left), oper(oper), right(right) {}
 
-ExprLogical::~ExprLogical() {
-  //	delete left;
-  //	delete right;
-}
+ExprLogical::~ExprLogical() {}
 
-Ltype ExprLogical::accept(ExprVisitor &v) const {
-  return v.visit(
-      std::static_pointer_cast<const ExprLogical>(shared_from_this()));
+Ltype ExprLogical::accept(ExprVisitor& v) const {
+  return v.visit(this);
 }
 
 ExprFun::ExprFun(std::list<Token> params,
-                 std::unique_ptr<const StmtList> &&listp)
+                 std::unique_ptr<const StmtList>&& listp)
     : Functional(params, std::move(listp)) {}
 
-Ltype ExprFun::accept(ExprVisitor &v) const {
+Ltype ExprFun::accept(ExprVisitor& v) const {
   return v.visit(std::static_pointer_cast<const ExprFun>(shared_from_this()));
 }

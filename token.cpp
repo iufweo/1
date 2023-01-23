@@ -6,13 +6,14 @@
 
 using enum Token::Type;
 
-Token::Token(Token::Type type, std::string lexeme, Literal literal,
+Token::Token(Token::Type type,
+             std::string lexeme,
+             Literal literal,
              std::size_t lineNum)
     : type(type), lexeme(lexeme), literal(literal), lineNum(lineNum) {}
 
 Token::operator std::string() const {
-  // everything must correspond to the Token::Type enum
-  static const char *t[] = {
+  static const char* t[] = {
       "LEFT_PAREN",    "RIGHT_PAREN", "LEFT_BRACE",  "RIGHT_BRACE",
       "COMMA",         "DOT",         "MINUS",       "PLUS",
       "SEMICOLON",     "SLASH",       "STAR",        "BANG",
@@ -33,10 +34,10 @@ Token::operator std::string() const {
          " " + lexeme + " " + literalToString(literal);
 }
 
-bool Token::operator==(const Token &rhs) const {
+bool Token::operator==(const Token& rhs) const {
   return lexeme == rhs.lexeme;
 }
 
-std::size_t Token::Hash::operator()(const Token &token) const noexcept {
+std::size_t Token::Hash::operator()(const Token& token) const noexcept {
   return std::hash<std::string>()(token.lexeme);
 }

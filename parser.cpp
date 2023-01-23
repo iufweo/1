@@ -14,9 +14,9 @@ decltype(Parser::tokenList.cbegin()) Parser::itCurrent;
 decltype(Parser::tokenList.cbegin()) Parser::itPrevious;
 
 template <typename T>
-std::shared_ptr<const Expr>
-Parser::parseBinary(std::shared_ptr<const Expr> (*f)(),
-                    std::initializer_list<Token::Type> tts) {
+std::shared_ptr<const Expr> Parser::parseBinary(
+    std::shared_ptr<const Expr> (*f)(),
+    std::initializer_list<Token::Type> tts) {
   std::shared_ptr<const Expr> e, right;
 
   e = f();
@@ -30,7 +30,9 @@ Parser::parseBinary(std::shared_ptr<const Expr> (*f)(),
   return e;
 }
 
-std::shared_ptr<const Expr> Parser::expression() { return comma(); }
+std::shared_ptr<const Expr> Parser::expression() {
+  return comma();
+}
 
 std::shared_ptr<const Expr> Parser::assignment() {
   std::shared_ptr<const Expr> exprp, value;
@@ -72,7 +74,7 @@ std::shared_ptr<const Expr> Parser::conditional() {
 
   exprp = logicalOr();
   while (match({QUESTIONMARK})) {
-    thenp = logicalOr();
+    thenp = expression();
     consume(COLON, "expected ':' after '?'");
     elsep = conditional();
     exprp = std::make_shared<const ExprTern>(exprp, thenp, elsep);
@@ -129,8 +131,8 @@ std::shared_ptr<const Expr> Parser::call() {
   return exprp;
 }
 
-std::shared_ptr<const Expr>
-Parser::finishCall(std::shared_ptr<const Expr> exprp) {
+std::shared_ptr<const Expr> Parser::finishCall(
+    std::shared_ptr<const Expr> exprp) {
   std::list<std::shared_ptr<const Expr>> args;
   unsigned int argsCount;
 
@@ -180,7 +182,6 @@ std::shared_ptr<const Expr> Parser::primary() {
   if (match({FUN}))
     return expressionFun();
   // these should not get here
-  // + 5 == 3. == 3 not discarded because equality has lower precedence
   if (match({EQUAL_EQUAL, BANG_EQUAL}))
     throw handleErrorProduction(equality);
   if (match({GREATER, GREATER_EQUAL, LESS, LESS_EQUAL}))
@@ -189,7 +190,6 @@ std::shared_ptr<const Expr> Parser::primary() {
     throw handleErrorProduction(term);
   if (match({SLASH, STAR, PERCENT}))
     throw handleErrorProduction(factor);
-  // COLON, QUESTIONMARK, COMMA
 
   throw error(peek(), "expected expression");
 }
@@ -208,7 +208,7 @@ bool Parser::check(Token::Type type) {
   return peek().type == type;
 }
 
-const Token &Parser::advance() {
+const Token& Parser::advance() {
   if (!isAtEnd())
     itPrevious = itCurrent++;
   else
@@ -216,13 +216,16 @@ const Token &Parser::advance() {
   return previous();
 }
 
-const Token &Parser::peek() { return *itCurrent; }
+const Token& Parser::peek() {
+  return *itCurrent;
+}
 
-const Token &Parser::previous() { return *itPrevious; }
+const Token& Parser::previous() {
+  return *itPrevious;
+}
 
 bool Parser::isAtEnd() {
   return peek().type == EOFF;
-  //	return itCurrent == --tokenList.cend();
 }
 
 bool Parser::match(std::initializer_list<Token::Type> tts) {
@@ -236,7 +239,7 @@ bool Parser::match(std::initializer_list<Token::Type> tts) {
   return 0;
 }
 
-const Token &Parser::consume(Token::Type tt, std::string msg) {
+const Token& Parser::consume(Token::Type tt, std::string msg) {
   if (!check(tt))
     throw error(peek(), msg);
   return advance();
@@ -255,26 +258,25 @@ void Parser::synchronize() {
       return;
 
     switch (peek().type) {
-    case CLASS:
-    case FUN:
-    case VAR:
-    case FOR:
-    case IF:
-    case WHILE:
-    case PRINT:
-    case RETURN: // FALLTHROUGH
-      return;
-      break;
-    default:
-      // report
-      break;
+      case CLASS:
+      case FUN:
+      case VAR:
+      case FOR:
+      case IF:
+      case WHILE:
+      case PRINT:
+      case RETURN:  // FALLTHROUGH
+        return;
+        break;
+      default:
+        break;
     }
     advance();
   }
 }
 
-std::list<std::shared_ptr<const Stmt>>
-Parser::parse(const std::list<Token> &tokenList) {
+std::list<std::shared_ptr<const Stmt>> Parser::parse(
+    const std::list<Token>& tokenList) {
   std::list<std::shared_ptr<const Stmt>> stmtPList;
   std::unique_ptr<const Stmt> stmtp;
 
@@ -290,8 +292,8 @@ Parser::parse(const std::list<Token> &tokenList) {
   return stmtPList;
 }
 
-Parser::ParseError
-Parser::handleErrorProduction(std::shared_ptr<const Expr> (*f)()) {
+Parser::ParseError Parser::handleErrorProduction(
+    std::shared_ptr<const Expr> (*f)()) {
   // skip the next expression with the appropriate precedence
   f();
   Interp::error(peek(), "expected expression before the operator");
@@ -364,7 +366,7 @@ std::unique_ptr<const Stmt> Parser::definition() {
       stmtp = definitionClass();
     else
       stmtp = statement();
-  } catch (ParseError &e) {
+  } catch (ParseError& e) {
     synchronize();
 
     stmtp = nullptr;
@@ -421,7 +423,7 @@ std::unique_ptr<const Stmt> Parser::statementWhile() {
   consume(RIGHT_PAREN, "expected ')'");
   stmtp = statement();
 
-  return std::make_unique<const StmtLoop>(condp, stmtp.release());
+  return std::make_unique<const StmtLoop>(condp, nullptr, stmtp.release());
 }
 
 std::unique_ptr<const Stmt> Parser::statementFor() {
@@ -458,18 +460,16 @@ std::unique_ptr<const Stmt> Parser::statementFor() {
     exprp = expression();
     consume(RIGHT_PAREN, "expected ')'");
   }
-
   body.push_back(statement());
-  if (exprp != nullptr)
-    body.push_back(std::make_unique<const StmtExpr>(exprp));
-
-  loopp =
-      std::make_unique<const StmtLoop>(condp, new StmtList(std::move(body)));
+  // nullptr exprp is handled
+  loopp = std::make_unique<const StmtLoop>(condp, exprp,
+                                           new StmtList(std::move(body)));
   if (declp != nullptr) {
     wrap.push_back(std::move(declp));
     wrap.push_back(std::move(loopp));
     return std::make_unique<const StmtList>(std::move(wrap));
   }
+
   return loopp;
 }
 
@@ -506,8 +506,9 @@ Parser::parseFun() {
 std::unique_ptr<const StmtFun> Parser::definitionFun() {
   std::tuple<std::list<Token>, std::unique_ptr<const StmtList>> t;
 
-  Token token = consume(IDENTIFIER, "expected identifier after 'fun' "
-                                    "for function definition");
+  Token token = consume(IDENTIFIER,
+                        "expected identifier after 'fun' "
+                        "for function definition");
   consume(LEFT_PAREN, "expected '(' after '" + token.lexeme +
                           "' for "
                           "function definition");
@@ -554,8 +555,9 @@ std::unique_ptr<const Stmt> Parser::definitionClass() {
       else
         methods.push_back(std::move(funp));
     } else {
-      consume(FUN, "expected 'fun' after 'class' for static "
-                   "method");
+      consume(FUN,
+              "expected 'fun' after 'class' for static "
+              "method");
       // may have the same name as the class, leave to
       // resolver
       staticMethods.push_back(definitionFun());

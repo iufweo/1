@@ -14,29 +14,28 @@ Func::Func(std::size_t arity) : arity(arity) {}
 
 Clock::Clock() : Func(0) {}
 
-Clock *Clock::get() {
+Clock* Clock::get() {
   static Clock c;
 
   return &c;
 }
 
-Ltype Clock::call(Interp &interp, const std::list<Ltype> &args) {
+Ltype Clock::call(Interp& interp, const std::list<Ltype>& args) {
   (void)interp;
   (void)args;
   return (double)std::clock() / CLOCKS_PER_SEC;
 }
 
-// void
-// Clock::accept(RunStructVisitor &v)
-//{}
-
-Lfunc::Lfunc(std::shared_ptr<const Functional> funp, Interp::Env *enclosing,
+Lfunc::Lfunc(std::shared_ptr<const Functional> funp,
+             Interp::Env* enclosing,
              bool isCtor)
-    : Func(funp->params.size()), funp(funp), enclosing(enclosing),
+    : Func(funp->params.size()),
+      funp(funp),
+      enclosing(enclosing),
       isCtor(isCtor) {}
 
-Ltype Lfunc::call(Interp &interp, const std::list<Ltype> &args) {
-  Interp::Env *newEnv;
+Ltype Lfunc::call(Interp& interp, const std::list<Ltype>& args) {
+  Interp::Env* newEnv;
   Ltype ret;
 
   Interp::ReclaimerCtx ctx(interp);
@@ -53,7 +52,7 @@ Ltype Lfunc::call(Interp &interp, const std::list<Ltype> &args) {
     newEnv->def(*itParams, *itArgs);
   try {
     interp.execute(*funp->listp.get(), newEnv);
-  } catch (Interp::Return &exception) {
+  } catch (Interp::Return& exception) {
     ret = exception.retVal;
   }
 
@@ -62,9 +61,9 @@ Ltype Lfunc::call(Interp &interp, const std::list<Ltype> &args) {
   return ret;
 }
 
-Lfunc *Lfunc::bind(Interp &interp, Linstance *inst) const {
-  Interp::Env *newEnv;
-  Lfunc *ptr;
+Lfunc* Lfunc::bind(Interp& interp, Linstance* inst) const {
+  Interp::Env* newEnv;
+  Lfunc* ptr;
   Interp::ReclaimerCtx ctx(interp);
 
   newEnv = interp.alloc<Interp::Env>(ctx, enclosing);
@@ -75,22 +74,22 @@ Lfunc *Lfunc::bind(Interp &interp, Linstance *inst) const {
   return ptr;
 }
 
-// void
-// Lfunc::accept(RunStructVisitor &v)
-//{
-//	v.mark(this);
-// }
-
-Lclass::Lclass(std::string name, std::size_t ctorArity,
-               std::unordered_map<std::string, Lfunc *> methods,
-               std::unordered_map<std::string, Lfunc *> staticMethods,
-               Lclass *base, Interp::Env *superEnv)
-    : Func(ctorArity), name(name), methods(methods),
-      staticMethods(staticMethods), base(base), superEnv(superEnv) {}
+Lclass::Lclass(std::string name,
+               std::size_t ctorArity,
+               std::unordered_map<std::string, Lfunc*> methods,
+               std::unordered_map<std::string, Lfunc*> staticMethods,
+               Lclass* base,
+               Interp::Env* superEnv)
+    : Func(ctorArity),
+      name(name),
+      methods(methods),
+      staticMethods(staticMethods),
+      base(base),
+      superEnv(superEnv) {}
 
 // when called as class name
-Ltype Lclass::call(Interp &interp, const std::list<Ltype> &args) {
-  Linstance *ptr;
+Ltype Lclass::call(Interp& interp, const std::list<Ltype>& args) {
+  Linstance* ptr;
   Interp::ReclaimerCtx ctx(interp);
 
   ptr = interp.alloc<Linstance>(ctx, this);
@@ -104,10 +103,10 @@ Ltype Lclass::call(Interp &interp, const std::list<Ltype> &args) {
   return ptr;
 }
 
-std::optional<Lfunc *>
-Lclass::get(const std::unordered_map<std::string, Lfunc *> &table,
-            std::optional<Lfunc *> (Lclass::*getter)(std::string) const,
-            std::string name) const {
+std::optional<Lfunc*> Lclass::get(
+    const std::unordered_map<std::string, Lfunc*>& table,
+    std::optional<Lfunc*> (Lclass::*getter)(std::string) const,
+    std::string name) const {
   auto it = table.find(name);
   if (it == table.end()) {
     if (base == nullptr)
@@ -117,24 +116,18 @@ Lclass::get(const std::unordered_map<std::string, Lfunc *> &table,
   return it->second;
 }
 
-std::optional<Lfunc *> Lclass::getMethod(std::string name) const {
+std::optional<Lfunc*> Lclass::getMethod(std::string name) const {
   return get(methods, &Lclass::getMethod, name);
 }
 
-std::optional<Lfunc *> Lclass::getStaticMethod(std::string name) const {
+std::optional<Lfunc*> Lclass::getStaticMethod(std::string name) const {
   return get(staticMethods, &Lclass::getStaticMethod, name);
 }
 
-// void
-// Lclass::accept(RunStructVisitor &v)
-//{
-//	v.mark(this);
-// }
+Linstance::Linstance(Lclass* lclass) : lclass(lclass), properties{} {}
 
-Linstance::Linstance(Lclass *lclass) : lclass(lclass), properties{} {}
-
-std::optional<Ltype> Linstance::get(Interp &interp, std::string name) {
-  std::optional<Lfunc *> ret;
+std::optional<Ltype> Linstance::get(Interp& interp, std::string name) {
+  std::optional<Lfunc*> ret;
 
   auto it = properties.find(name);
   if (it == properties.end()) {
@@ -152,9 +145,3 @@ void Linstance::set(std::string name, Ltype obj) {
   // create if doesn't exist or assign other
   properties[name] = obj;
 }
-
-// void
-// Linstance::accept(RunStructVisitor &v)
-//{
-//	v.mark(this);
-// }

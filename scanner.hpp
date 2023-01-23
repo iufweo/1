@@ -7,7 +7,7 @@
 #include "uncopyable.hpp"
 
 class Scanner : public ClassUncopyable {
-private:
+ private:
   std::string input;
   std::size_t start, current, lineNum;
   std::list<Token> tokenList;
@@ -19,7 +19,7 @@ private:
   void addToken(Token::Type tt);
   void addToken(Token::Type tt, Literal literal);
 
-public:
+ public:
   Scanner(std::string inputStr);
 
   std::list<Token> scanTokens();

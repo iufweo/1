@@ -18,18 +18,18 @@ struct StmtList;
 const unsigned int N_ARGS_MAX = 255;
 
 class Parser : public ClassUncopyable {
-private:
+ private:
   static std::list<Token> tokenList;
   static decltype(tokenList.cbegin()) itCurrent;
   static decltype(tokenList.cbegin()) itPrevious;
 
   static bool match(std::initializer_list<Token::Type> tts);
   static bool check(Token::Type type);
-  static const Token &peek();
-  static const Token &advance();
+  static const Token& peek();
+  static const Token& advance();
   static bool isAtEnd();
-  static const Token &previous();
-  static const Token &consume(Token::Type tt, std::string msg);
+  static const Token& previous();
+  static const Token& consume(Token::Type tt, std::string msg);
   static bool matchTwo(Token::Type first, Token::Type second);
   static void back();
 
@@ -45,17 +45,15 @@ private:
   static std::shared_ptr<const Expr> factor();
   static std::shared_ptr<const Expr> unary();
   static std::shared_ptr<const Expr> call();
-  static std::shared_ptr<const Expr>
-  finishCall(std::shared_ptr<const Expr> exprp);
+  static std::shared_ptr<const Expr> finishCall(
+      std::shared_ptr<const Expr> exprp);
   static std::shared_ptr<const Expr> primary();
   static std::shared_ptr<const ExprFun> expressionFun();
 
   template <typename T>
-  static std::shared_ptr<const Expr>
-  parseBinary(std::shared_ptr<const Expr> (*f)(),
-              std::initializer_list<Token::Type> tts);
-  //	requires std::is_same_v<const Expr * (*)(), Func> &&
-  //(std::is_same_v<Token::Type, TTs> && ...);
+  static std::shared_ptr<const Expr> parseBinary(
+      std::shared_ptr<const Expr> (*f)(),
+      std::initializer_list<Token::Type> tts);
   static std::tuple<std::list<Token>, std::unique_ptr<const StmtList>>
   parseFun();
 
@@ -76,16 +74,16 @@ private:
   static void synchronize();
 
   class ParseError : public std::runtime_error {
-  public:
+   public:
     ParseError();
   };
 
   static ParseError error(Token token, std::string msg);
   static ParseError handleErrorProduction(std::shared_ptr<const Expr> (*f)());
 
-public:
+ public:
   Parser() = delete;
 
-  static std::list<std::shared_ptr<const Stmt>>
-  parse(const std::list<Token> &tokenList);
+  static std::list<std::shared_ptr<const Stmt>> parse(
+      const std::list<Token>& tokenList);
 };
