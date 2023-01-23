@@ -1,0 +1,2 @@
+foo(a | b);
+// expect: line 1: location: : unexpected character: '|'

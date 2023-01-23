@@ -1,0 +1,2 @@
+{ print r; }
+// expect: line 1: location: at 'r': undeclared variable

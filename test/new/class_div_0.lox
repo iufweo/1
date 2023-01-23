@@ -1,0 +1,10 @@
+class Test {
+	fun Test()
+	{
+		0 % 0;
+	}
+}
+
+Test();
+Test();
+// expect: line 4: location: at '%': division by zero

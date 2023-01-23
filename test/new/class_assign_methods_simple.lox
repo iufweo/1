@@ -1,0 +1,18 @@
+class Test {
+	fun f()
+	{
+		return this.msg;
+	}
+}
+
+var x;
+{
+	{
+		{
+			var y = Test();
+			y.msg = "test";
+			x = y.f;
+		}
+	}
+}
+print x(); // expect: test

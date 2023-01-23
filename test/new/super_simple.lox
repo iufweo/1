@@ -1,0 +1,16 @@
+class Base {
+	fun f()
+	{
+		print "Base";
+	}
+}
+
+class Derived < Base {
+	fun f()
+	{
+		super.f();
+	}
+}
+
+var d = Derived();
+d.f();	// expect: Base

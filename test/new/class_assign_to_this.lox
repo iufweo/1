@@ -1,0 +1,10 @@
+class Test {
+	fun test()
+	{
+		this = "test";
+	}
+}
+
+//t = Test();
+//t.test();
+// expect: line 4: location: at '=': invalid assignment target

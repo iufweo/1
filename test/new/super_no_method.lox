@@ -1,0 +1,16 @@
+class Base {
+	fun f()
+	{}
+}
+
+class Derived < Base {
+	fun g()
+	{}
+	fun h()
+	{
+		super.g();
+	}
+}
+
+Derived().h();
+// expect: line 11: location: at 'g': undefined property

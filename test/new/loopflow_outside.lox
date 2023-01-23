@@ -1,0 +1,8 @@
+for (var i = 0; i < 10; i = i + 1) {
+	if (i / 4 == 2)
+		break;
+	else
+		print i;
+}
+break;		// expect: line 7: location: at 'break': outside loop scope
+continue;	// expect: line 8: location: at 'continue': outside loop scope

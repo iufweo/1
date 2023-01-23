@@ -1,0 +1,13 @@
+fun f()
+{
+}
+
+class Derived < f {
+	fun Derived(field)
+	{
+		field;	// suppress resolver
+	}
+}
+
+print Derived(5).field;
+// expect: line 5: location: at 'f': expected class, got function

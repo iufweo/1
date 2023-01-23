@@ -1,0 +1,4 @@
+class Foo {}
+
+class Bar < (Foo) {}
+// expect: line 3: location: at '(': expected class name after '<'

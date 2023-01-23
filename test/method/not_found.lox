@@ -1,0 +1,4 @@
+class Foo {}
+
+Foo().unknown();
+// expect: line 3: location: at 'unknown': undefined property

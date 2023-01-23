@@ -1,0 +1,9 @@
+class Test {
+	class fun f()
+	{
+		return this;
+	}
+}
+
+print Test.f();
+// expect: line 4: location: at 'this': in static method
