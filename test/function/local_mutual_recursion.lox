@@ -1,0 +1,17 @@
+{
+  fun isEven(n) {
+    if (n == 0) return true;
+    return isOdd(n - 1);
+  }
+
+  fun isOdd(n) {
+    if (n == 0) return false;
+    return isEven(n - 1);
+  }
+
+  isEven(4);
+
+// suppress resolver
+  isOdd(4);
+}
+// expect: line 4: location: at 'isOdd': undeclared variable

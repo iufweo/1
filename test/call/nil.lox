@@ -1,0 +1,1 @@
+nil(); // expect: line 1: location: at ')': call to nil: can only call functions and constructors

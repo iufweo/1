@@ -1,0 +1,5 @@
+class Foo {
+  fun Foo(a, b) { a; b; } // suppress resolver
+}
+
+var foo = Foo(1); // expect: line 5: location: at ')': expected 2 arguments, got 1

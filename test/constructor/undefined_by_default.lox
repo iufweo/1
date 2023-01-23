@@ -1,0 +1,5 @@
+class Test {
+}
+
+Test().Test();
+// expect: line 4: location: at 'Test': undefined property

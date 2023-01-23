@@ -1,0 +1,1 @@
+nil.foo = "value"; // expect: line 1: location: at 'foo': only class instances have fields
