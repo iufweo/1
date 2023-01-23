@@ -1,0 +1,6 @@
+fun foo(a) {
+  var a;
+}
+// expect: line 2: location: at 'a': static: redeclaration in non-global scope
+// expect: line 1: location: at 'a': static: previously declared here
+// expect: line 1: location: at 'a': declared but not used

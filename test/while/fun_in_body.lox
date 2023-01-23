@@ -1,0 +1,2 @@
+while (true) fun foo() {}
+// expect: line 1: location: at 'foo': expected '(' for function expression
