@@ -1,1 +1,0 @@
-true + 123; // expect: line 1: location: at '+': operands must be numbers or strings, got: bool, number

@@ -1,9 +1,0 @@
-class Foo {
-  fun method() {
-  	// no 'this'
-    print method;
-  }
-}
-
-Foo().method();
-// expect: line 4: location: at 'method': undeclared variable

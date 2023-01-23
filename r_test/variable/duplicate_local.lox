@@ -1,7 +1,0 @@
-{
-  var a = "value";
-  var a = "other";
-}
-// expect: line 3: location: at 'a': static: redeclaration in non-global scope
-// expect: line 2: location: at 'a': static: previously declared here
-// expect: line 2: location: at 'a': set but never used

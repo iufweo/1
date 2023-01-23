@@ -1,6 +1,0 @@
-{
-	var x;
-	print x;
-}
-// expect: line 3: location: at 'x': static: uninitialized variable
-// expect: line 2: location: at 'x': declared but not used

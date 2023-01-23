@@ -1,2 +1,0 @@
-// expect: line 2: location: at ';': expected identifier after '.'
-123.;

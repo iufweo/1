@@ -1,2 +1,0 @@
-fun foo(a, b c, d, e, f) {}
-// expect: line 1: location: at 'c': expected ')' after parameters

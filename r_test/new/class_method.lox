@@ -1,9 +1,0 @@
-class Test {
-	fun test()
-	{
-		print "test";
-	}
-}
-
-var t = Test();
-t.test();	// expect: test

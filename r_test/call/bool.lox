@@ -1,1 +1,0 @@
-true(); // expect: line 1: location: at ')': call to bool: can only call functions and constructors

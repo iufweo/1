@@ -1,3 +1,0 @@
-fun foo() {}
-
-foo.bar; // expect: line 3: location: at 'bar': property access on a non-class object

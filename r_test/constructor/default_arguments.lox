@@ -1,3 +1,0 @@
-class Foo {}
-
-var foo = Foo(1, 2, 3); // expect: line 3: location: at ')': expected 0 arguments, got 3

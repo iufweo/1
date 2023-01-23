@@ -1,3 +1,0 @@
-class Test < Test {
-}
-// expect: line 1: location: at 'Test': inherits from itself

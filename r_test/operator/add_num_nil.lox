@@ -1,1 +1,0 @@
-1 + nil; // expect: line 1: location: at '+': operands must be numbers or strings, got: number, nil

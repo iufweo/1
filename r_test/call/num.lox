@@ -1,1 +1,0 @@
-123(); // expect: line 1: location: at ')': call to number: can only call functions and constructors

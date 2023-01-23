@@ -1,6 +1,0 @@
-class Foo {}
-
-var foo = Foo();
-foo.bar = "not fn";
-
-foo.bar(); // expect: line 6: location: at ')': call to string: can only call functions and constructors

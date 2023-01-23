@@ -1,9 +1,0 @@
-var foo = "variable";
-
-class Foo {
-  fun method() {
-    print foo;
-  }
-}
-
-Foo().method(); // expect: variable

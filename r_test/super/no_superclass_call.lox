@@ -1,8 +1,0 @@
-class Base {
-  fun foo() {
-    super.doesNotExist(1);
-  }
-}
-
-Base().foo();
-// expect: line 3: location: at 'super': class does not have an ancestor

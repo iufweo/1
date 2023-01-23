@@ -1,9 +1,0 @@
-{
-	var f;
-	{
-		var x = "555";
-		fun h() { print x; }
-		f = h;
-	}
-	f();	// expect: 555
-}

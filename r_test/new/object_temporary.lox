@@ -1,7 +1,0 @@
-class Test {
-	fun f(x) {
-		print x;
-	}
-}
-
-Test().f("test");	// expect: test

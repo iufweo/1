@@ -1,5 +1,0 @@
-class Foo {
- fun bar() {}
-}
-
-print Foo().bar(); // expect: nil

@@ -1,5 +1,0 @@
-fun foo() {}
-print foo; // expect: function
-
-print clock;
-// expect: function

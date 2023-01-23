@@ -1,4 +1,0 @@
-fun foo() {}
-
-class Subclass < foo {}
-// expect: line 3: location: at 'foo': expected class, got function

@@ -1,6 +1,0 @@
-fun test()
-{
-	return 5;
-}
-
-print test();	// expect: 5

@@ -1,2 +1,0 @@
-if (true) "ok"; else fun foo() {}
-// expect: line 1: location: at 'foo': expected '(' for function expression

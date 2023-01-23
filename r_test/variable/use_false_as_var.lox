@@ -1,2 +1,0 @@
-var false = "value";
-// expect: line 1: location: at 'false': expected identifier

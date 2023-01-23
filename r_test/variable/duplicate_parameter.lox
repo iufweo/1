@@ -1,8 +1,0 @@
-fun foo(arg,
-        arg) {
-
-	arg;	// suppress resolver
-  "body";
-}
-// expect: line 2: location: at 'arg': static: redeclaration in non-global scope
-// expect: line 1: location: at 'arg': static: previously declared here

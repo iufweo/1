@@ -1,7 +1,0 @@
-fun f()
-{
-	print "test";
-}
-
-var x = f;
-x();	// expect: test

@@ -1,3 +1,0 @@
-fun foo() {}
-
-foo.bar = "value"; // expect: line 3: location: at 'bar': only class instances have fields

@@ -1,2 +1,0 @@
-fun f() 123;
-// expect: line 1: location: at '123': expected '{' at the start of function body

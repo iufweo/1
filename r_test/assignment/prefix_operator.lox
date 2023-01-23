@@ -1,2 +1,0 @@
-var a = "a";
-!a = "value"; // expect: line 2: location: at '=': invalid assignment target

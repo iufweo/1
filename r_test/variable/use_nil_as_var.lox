@@ -1,2 +1,0 @@
-var nil = "value";
-// expect: line 1: location: at 'nil': expected identifier

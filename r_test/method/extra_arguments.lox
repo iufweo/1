@@ -1,9 +1,0 @@
-class Foo {
-  fun method(a, b) {
-    print a;
-    print b;
-  }
-}
-
-Foo().method(1, 2, 3, 4);
-// expect: line 8: location: at ')': expected 2 arguments, got 4

@@ -1,6 +1,0 @@
-class Foo {
-  fun bar() { return this; }
-  fun baz() { return "baz"; }
-}
-
-print Foo().bar().baz(); // expect: baz

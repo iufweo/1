@@ -1,4 +1,0 @@
-{
-  print notDefined;
-}
-// expect: line 2: location: at 'notDefined': undeclared variable

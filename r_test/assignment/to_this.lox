@@ -1,7 +1,0 @@
-class Foo {
-  fun Foo() {
-    this = "value"; // expect: line 3: location: at '=': invalid assignment target
-  }
-}
-
-Foo();

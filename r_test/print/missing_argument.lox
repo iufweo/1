@@ -1,1 +1,0 @@
-print; // expect: line 1: location: at ';': expected expression

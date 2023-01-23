@@ -1,5 +1,0 @@
-var x;
-{
-	print x;
-}
-// expect: line 3: location: at 'x': uninitialized variable

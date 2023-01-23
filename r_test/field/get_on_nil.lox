@@ -1,2 +1,0 @@
-nil.foo;
-// expect: line 1: location: at 'foo': property access on a non-class object

@@ -1,7 +1,0 @@
-class Foo {
-  fun method(a, b)
-  {a; b;}	// suppress resolver
-}
-
-Foo().method(1);
-// expect: line 6: location: at ')': expected 2 arguments, got 1

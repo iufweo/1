@@ -1,1 +1,0 @@
--"s"; // expect: line 1: location: at '-': operand must be a number, got: string

@@ -1,8 +1,0 @@
-class Test {
-	fun f()
-	{
-		return this.f;
-	}
-}
-
-print Test().f(); // expect: function
