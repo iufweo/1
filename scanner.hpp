@@ -6,7 +6,7 @@
 #include "token.hpp"
 #include "uncopyable.hpp"
 
-class Scanner : public ClassUncopyable {
+class Scanner : public Uncopyable {
  private:
   std::string input;
   std::size_t start, current, lineNum;

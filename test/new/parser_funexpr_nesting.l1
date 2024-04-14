@@ -1,0 +1,4 @@
+fun () { fun () { print 4; }(); }();
+// expect: 4
+fun () { fun () { fun () { fun () { fun () { print 5; }(); }(); }(); }(); }();
+// expect: 5

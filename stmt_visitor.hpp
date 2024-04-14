@@ -1,9 +1,9 @@
 #pragma once
 #include <memory>
 
-#include "stmt.hpp"
+#include "stmt_fwd.hpp"
 
-class StmtVisitor : public ClassUncopyable {
+class StmtVisitor : public Uncopyable {
  public:
   virtual void visit(const StmtExpr& stmt) = 0;
   virtual void visit(const StmtPrint& stmt) = 0;

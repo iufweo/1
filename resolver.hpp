@@ -1,15 +1,14 @@
 #pragma once
 #include <list>
 #include <memory>
+#include <optional>
 #include <unordered_map>
 
 #include "expr_visitor.hpp"
+#include "interp_func_fwd.hpp"
 #include "ltype.hpp"
 #include "stmt_visitor.hpp"
 #include "token.hpp"
-
-// forward
-class Interp;
 
 class Resolver : public ExprVisitor, public StmtVisitor {
  private:
@@ -46,8 +45,8 @@ class Resolver : public ExprVisitor, public StmtVisitor {
   std::list<std::unordered_map<Token, VarState, Token::Hash>> scopes;
   void beginScope();
   void endScope();
-  void declare(Token token);
-  void initialize(Token token);
+  void declare(const Token& token);
+  void initialize(const Token& token);
 
  public:
   enum class ScopeType : int {
@@ -83,7 +82,6 @@ class Resolver : public ExprVisitor, public StmtVisitor {
   std::optional<decltype(Resolver::scopes)::value_type::iterator> resolveLocal(
       const Expr* expr,
       const Token& token);
-  void initializeAt(Token token, std::size_t distance);
 
   Interp& interp;
 

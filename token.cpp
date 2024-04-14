@@ -25,7 +25,6 @@ Token::operator std::string() const {
       "PRINT",         "RETURN",      "SUPER",       "THIS",
       "VAR",           "WHILE",       "EOFF",        "COLON",
       "QUESTIONMARK",  "CONTINUE",    "BREAK",       "PERCENT"};
-  // since step is 1
   static_assert(sizeof(t) / sizeof(t[0]) ==
                 (unsigned int)PERCENT - (unsigned int)LEFT_PAREN + 1);
 

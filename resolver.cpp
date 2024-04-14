@@ -4,8 +4,10 @@
 #include <string>
 #include <unordered_map>
 
+#include "expr.hpp"
 #include "interp.hpp"
 #include "ltype.hpp"
+#include "stmt.hpp"
 
 #include "resolver.hpp"
 
@@ -288,7 +290,7 @@ void Resolver::endScope() {
   scopes.pop_back();
 }
 
-void Resolver::declare(Token token) {
+void Resolver::declare(const Token& token) {
   // not global
   if (!scopes.empty()) {
     auto it = scopes.back().find(token);
@@ -304,7 +306,7 @@ void Resolver::declare(Token token) {
   }
 }
 
-void Resolver::initialize(Token token) {
+void Resolver::initialize(const Token& token) {
   if (!scopes.empty())
     (scopes.back())[token] = VarState::SET;
 }
@@ -315,6 +317,7 @@ Resolver::resolveLocal(const Expr* expr, const Token& token) {
   auto sb = scopes.rbegin();
   auto se = scopes.rend();
 
+  // leaves names in global uninspected
   for (count = 0; sb != se; count++, sb++) {
     auto it = sb->find(token);
     if (it != sb->end()) {

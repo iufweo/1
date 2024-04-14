@@ -1,16 +1,18 @@
-#include <unistd.h>
-
-#include <cerrno>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
 #include <filesystem>
 #include <fstream>
-#include <iostream>
 #include <list>
 #include <memory>
 #include <stdexcept>
 #include <string>
+
+#ifndef WINDOWS
+#include <unistd.h>
+#endif
+#include <cerrno>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <iostream>
 
 namespace fs = std::filesystem;
 
@@ -34,7 +36,7 @@ static const std::string notPrefixes[] = {
                           std::string path) {
   int ret;
   std::size_t numComps;
-
+  
   auto eb = expects.cbegin();
   auto ee = expects.cend();
   auto rb = results.cbegin();
@@ -93,12 +95,17 @@ static const std::string notPrefixes[] = {
 
   std::istringstream in;
   std::string line;
-
   std::size_t nr;
   std::size_t size;
   std::size_t total;
 
-  if ((fp = popen(cmd.c_str(), "r")) == nullptr)
+  if ((fp =
+#ifdef WINDOWS
+           _popen(cmd.c_str(), "r")
+#else
+           popen(cmd.c_str(), "r")
+#endif
+           ) == nullptr)
     throw error("popen: " + cmd + ": " + std::strerror(errno));
 
   size = 1024;
@@ -125,7 +132,13 @@ static const std::string notPrefixes[] = {
     results.push_back(line);
   }
 
-  if (pclose(fp) == -1)
+  if (
+#ifdef WINDOWS
+      _pclose(fp)
+#else
+      pclose(fp)
+#endif
+      == -1)
     throw error(std::string("pclose: ") + std::strerror(errno));
 
   return results;

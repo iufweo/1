@@ -8,10 +8,10 @@
 #include "interp.hpp"
 #include "ltype.hpp"
 #include "runent.hpp"
-#include "stmt.hpp"
+#include "stmt_fwd.hpp"
 #include "uncopyable.hpp"
 
-class Func : public ClassUncopyable {
+class Func : public Uncopyable {
  public:
   Func(std::size_t arity);
 
@@ -85,7 +85,7 @@ class Lclass : public Func, public RunEnt {
   Ltype call(Interp& interp, const std::list<Ltype>& args) final;
 };
 
-class Linstance : public ClassUncopyable, public RunEnt {
+class Linstance : public Uncopyable, public RunEnt {
  private:
   friend class Interp;
 

@@ -3,13 +3,7 @@
 #include <string>
 #include <variant>
 
-//#include "interp.hpp"
-class Interp;
-// forward
-class Func;
-class Linstance;
-class Lclass;
-class Lfunc;
+#include "interp_func_fwd.hpp"
 
 // nil
 class Lnil {};

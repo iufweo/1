@@ -6,15 +6,11 @@
 
 StmtExpr::StmtExpr(std::shared_ptr<const Expr> exprp) : exprp(exprp) {}
 
-StmtExpr::~StmtExpr() {}
-
 void StmtExpr::accept(StmtVisitor& v) const {
   v.visit(*this);
 }
 
 StmtPrint::StmtPrint(std::shared_ptr<const Expr> exprp) : exprp(exprp) {}
-
-StmtPrint::~StmtPrint() {}
 
 void StmtPrint::accept(StmtVisitor& v) const {
   v.visit(*this);
@@ -22,8 +18,6 @@ void StmtPrint::accept(StmtVisitor& v) const {
 
 StmtVar::StmtVar(Token token, std::shared_ptr<const Expr> exprp)
     : token(token), exprp(exprp) {}
-
-StmtVar::~StmtVar() {}
 
 void StmtVar::accept(StmtVisitor& v) const {
   v.visit(*this);

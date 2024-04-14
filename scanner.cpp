@@ -43,7 +43,7 @@ bool Scanner::compareAndNext(char expected) {
 
 void Scanner::scanToken() {
   char c;
-  std::string convert;
+  bool completeComment;
 
   double val;
   Token::Type type;
@@ -108,13 +108,17 @@ void Scanner::scanToken() {
           current++;
         // /**/
       } else if (compareAndNext('*')) {
-        for (; current < input.size();) {
+        completeComment = 0;
+        for (; current < input.size(); current++) {
           if (compareAndNext('*') && compareAndNext('/')) {
+            completeComment = 1;
             break;
-          } else {
-            current++;
+          } else if (compareAndNext('/') && compareAndNext('*')) {
+            Interp::error(lineNum, "nested multiline comments");
           }
         }
+        if (!completeComment)
+          Interp::error(lineNum, "unterminated comment");
       } else {
         addToken(SLASH);
       }
@@ -142,13 +146,10 @@ void Scanner::scanToken() {
       if (std::isdigit(c)) {
         // std::stod allows this
         if (c == '0' && current < input.size() &&
-            std::isdigit(input.at(current))) {
-          convert.push_back(c);
+            std::isdigit(input.at(current)))
           Interp::error(lineNum,
                         "multidigit number with"
                         " leading zero");
-        }
-
         while (current < input.size() && std::isdigit(input.at(current)))
           current++;
 
@@ -159,7 +160,7 @@ void Scanner::scanToken() {
         while (current < input.size() && std::isdigit(input.at(current)))
           current++;
 
-        val = std::stod(input.substr(start, start - current));
+        val = std::stod(input.substr(start, current - start));
         addToken(NUMBER, val);
         // keyword, IDENTIFIER
       } else if (std::isalpha(c)) {
@@ -173,8 +174,8 @@ void Scanner::scanToken() {
           type = IDENTIFIER;
         addToken(type);
       } else {
-        convert.push_back(c);
-        Interp::error(lineNum, "unexpected character: '" + convert + "'");
+        Interp::error(lineNum,
+                      "unexpected character: '" + std::string(1, c) + "'");
       }
       break;
   }

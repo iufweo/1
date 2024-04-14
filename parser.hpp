@@ -4,20 +4,16 @@
 #include <stdexcept>
 #include <string>
 
+#include "expr_fwd.hpp"
+#include "stmt_fwd.hpp"
 #include "uncopyable.hpp"
-// forward
-struct Expr;
-struct ExprFun;
-struct Stmt;
-struct StmtFun;
-struct StmtList;
 
 #include "ltype.hpp"
 #include "token.hpp"
 
 const unsigned int N_ARGS_MAX = 255;
 
-class Parser : public ClassUncopyable {
+class Parser : public Uncopyable {
  private:
   static std::list<Token> tokenList;
   static decltype(tokenList.cbegin()) itCurrent;
@@ -78,7 +74,7 @@ class Parser : public ClassUncopyable {
     ParseError();
   };
 
-  static ParseError error(Token token, std::string msg);
+  static ParseError error(const Token& token, std::string msg);
   static ParseError handleErrorProduction(std::shared_ptr<const Expr> (*f)());
 
  public:

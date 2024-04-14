@@ -2,9 +2,8 @@
 #include <list>
 #include <memory>
 
+#include "stmt_fwd.hpp"
 #include "token.hpp"
-
-struct StmtList;
 
 struct Functional {
   const std::list<Token> params;

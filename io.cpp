@@ -1,6 +1,8 @@
 #include <fstream>
 #include <string>
 
+#include "io.hpp"
+
 std::string readAll(std::ifstream& is) {
   std::string ret;
   char* buf;

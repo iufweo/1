@@ -1,18 +1,11 @@
 #pragma once
 
-struct StructUncopyable {
-  StructUncopyable() = default;
-  StructUncopyable(const StructUncopyable& rhs) = delete;
-  StructUncopyable(StructUncopyable&& rhs) = delete;
-  StructUncopyable& operator=(const StructUncopyable& rhs) = delete;
-  StructUncopyable& operator=(StructUncopyable&& rhs) = delete;
-};
-
-class ClassUncopyable {
+class Uncopyable {
  public:
-  ClassUncopyable() = default;
-  ClassUncopyable(const ClassUncopyable& rhs) = delete;
-  ClassUncopyable(ClassUncopyable&& rhs) = delete;
-  ClassUncopyable& operator=(const ClassUncopyable& rhs) = delete;
-  ClassUncopyable& operator=(ClassUncopyable&& rhs) = delete;
+  Uncopyable() = default;
+
+  Uncopyable(const Uncopyable& rhs) = delete;
+  Uncopyable(Uncopyable&& rhs) = delete;
+  Uncopyable& operator=(const Uncopyable& rhs) = delete;
+  Uncopyable& operator=(Uncopyable&& rhs) = delete;
 };

@@ -1,7 +1,7 @@
-#include "ltype.hpp"
-
 #include <string>
 #include <variant>
+
+#include "ltype.hpp"
 
 std::string literalToString(const Literal& l) {
   std::string s;

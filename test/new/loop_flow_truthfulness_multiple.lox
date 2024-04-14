@@ -24,16 +24,16 @@ while (j > i) {
 // expect: 3
 
 if (0)
-	print "ok1";
-// expect: ok1
+	print "yeah";
+// expect: yeah
 if (0 == 1)
-	print "ok2";
+	print "duh";
 
 print j - i ? "test1" : "test2";	// expect: test1
 print false and 2 or 1;	// expect: 1
 
 if ("ok" == "nok")
-	print "nok?";
+	print "huh?";
 else
 	print 33.2;
 // expect: 33.2

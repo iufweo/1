@@ -4,13 +4,15 @@
 
 int main(int argc, char* argv[]) {
   Interp i;
+  int ret;
 
   switch (argc) {
     case 1:
       i.runPrompt();
+      ret = 0;
       break;
     case 2:
-      i.runFile(argv[1]);
+      ret = i.runFile(argv[1]);
       break;
     default:
       std::cerr << "argc = " << argc << '\n';
@@ -18,5 +20,5 @@ int main(int argc, char* argv[]) {
       break;
   }
 
-  return 0;
+  return ret;
 }

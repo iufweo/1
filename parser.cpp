@@ -4,6 +4,7 @@
 #include "expr.hpp"
 #include "interp.hpp"
 #include "ltype.hpp"
+#include "stmt.hpp"
 
 #include "parser.hpp"
 
@@ -68,7 +69,7 @@ std::shared_ptr<const Expr> Parser::logicalOr() {
 std::shared_ptr<const Expr> Parser::logicalAnd() {
   return parseBinary<ExprLogical>(equality, {AND});
 }
-
+// a == a ? b : (c ? d : e)
 std::shared_ptr<const Expr> Parser::conditional() {
   std::shared_ptr<const Expr> exprp, thenp, elsep;
 
@@ -181,7 +182,6 @@ std::shared_ptr<const Expr> Parser::primary() {
   }
   if (match({FUN}))
     return expressionFun();
-  // these should not get here
   if (match({EQUAL_EQUAL, BANG_EQUAL}))
     throw handleErrorProduction(equality);
   if (match({GREATER, GREATER_EQUAL, LESS, LESS_EQUAL}))
@@ -190,6 +190,7 @@ std::shared_ptr<const Expr> Parser::primary() {
     throw handleErrorProduction(term);
   if (match({SLASH, STAR, PERCENT}))
     throw handleErrorProduction(factor);
+  // COLON, QUESTIONMARK, COMMA
 
   throw error(peek(), "expected expression");
 }
@@ -245,7 +246,7 @@ const Token& Parser::consume(Token::Type tt, std::string msg) {
   return advance();
 }
 
-Parser::ParseError Parser::error(Token token, std::string msg) {
+Parser::ParseError Parser::error(const Token& token, std::string msg) {
   Interp::error(token, msg);
   return ParseError();
 }
@@ -344,12 +345,10 @@ void Parser::back() {
 bool Parser::matchTwo(Token::Type first, Token::Type second) {
   if (check(first)) {
     advance();
-    if (check(second)) {
+    if (check(second))
       return 1;
-    } else {
+    else
       back();
-      back();
-    }
   }
   return 0;
 }

@@ -6,14 +6,11 @@
 #include <unordered_map>
 
 #include "expr_visitor.hpp"
+#include "interp_func_fwd.hpp"
 #include "ltype.hpp"
 #include "runent.hpp"
 #include "stmt_visitor.hpp"
 #include "token.hpp"
-
-class Lfunc;
-class Lclass;
-class Linstance;
 
 class Interp : public ExprVisitor, public StmtVisitor {
  private:
@@ -45,8 +42,8 @@ class Interp : public ExprVisitor, public StmtVisitor {
   void visit(const StmtClass& stmt) final;
 
   Ltype eval(std::shared_ptr<const Expr> expr);
-  bool equality(const Ltype& left, const Ltype& right);
-  bool floatcmp(double a, double b);
+  bool equality(const Ltype& left, const Ltype& right) const;
+  bool floatEquality(double a, double b) const;
   bool isTruthful(const Ltype& obj) const;
   void checkNumberOperands(Token oper, const Ltype& obj) const;
   void checkNumberOperands(Token oper,
@@ -61,12 +58,11 @@ class Interp : public ExprVisitor, public StmtVisitor {
     RuntimeError(Token token, std::string what);
   };
   static bool hadError;
-  static bool hadRuntimeError;
 
   void handleRuntimeError(RuntimeError& ex);
 
  public:
-  class Env : public RunEnt, public ClassUncopyable {
+  class Env : public RunEnt, public Uncopyable {
    private:
     friend class Interp;
     Env* enclosing;
@@ -90,7 +86,7 @@ class Interp : public ExprVisitor, public StmtVisitor {
  private:
   Env global;
   Env* envp;
-  // is altered only by Resolver and never when code is run
+  // is filled by Resolver and is never altered when code is run
   std::unordered_map<const Expr*, std::size_t> locals;
 
  public:
@@ -100,7 +96,9 @@ class Interp : public ExprVisitor, public StmtVisitor {
   Ltype lookupVariable(const Token& token, const Expr* expr);
 
   using Allocated = std::variant<Env*, Lfunc*, Lclass*, Linstance*>;
-  std::list<Allocated> traced;
+  std::list<
+      Allocated>
+      traced;
   std::list<std::variant<Env*, Ltype>> stack;
   std::size_t heapSize;
 
@@ -158,7 +156,7 @@ class Interp : public ExprVisitor, public StmtVisitor {
   T* alloc(ReclaimerCtx& ctx, Ts&&... args) {
     T* ret;
 
-    ret = doAlloc<T>(args...);
+    ret = doAlloc<T>(std::forward<Ts>(args)...);
     stack.push_back(ret);
     ctx.count++;
     return ret;
@@ -197,12 +195,12 @@ class Interp : public ExprVisitor, public StmtVisitor {
   ~Interp();
 
   void runPrompt();
-  void runFile(std::string path);
+  int runFile(std::string path);
   static void testScanner(std::string inputStr);
 
   static void error(std::size_t lineNum, std::string msg);
-  static void error(Token token, std::string msg);
-  static void report(Token token, std::string msg);
+  static void error(const Token& token, std::string msg);
+  static void report(const Token& token, std::string msg);
   static void report(std::size_t lineNum,
                      std::string location,
                      std::string msg);

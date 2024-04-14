@@ -4,26 +4,29 @@
 // floating-point arithmetic
 #include <cmath>
 #include <memory>
+// measure run time
+// #include <chrono>
 // for readAll -- reading from a file
 #include <cassert>
 #include <fstream>
-#include <iostream>
 #include <optional>
 #include <variant>
 
 #include "assert.hpp"
+#include "expr.hpp"
 #include "func.hpp"
 #include "io.hpp"
 #include "parser.hpp"
 #include "resolver.hpp"
 #include "scanner.hpp"
+#include "stmt.hpp"
 #include "token.hpp"
 
 #include "interp.hpp"
 
 using enum Token::Type;
 
-bool Interp::floatcmp(double a, double b) {
+bool Interp::floatEquality(double a, double b) const {
   const double absEps = 1e-15;
   const double relEps = 1e-14;
   double diff;
@@ -36,7 +39,7 @@ bool Interp::floatcmp(double a, double b) {
 template <typename T>
 constexpr bool always_false_v = false;
 
-bool Interp::equality(const Ltype& left, const Ltype& right) {
+bool Interp::equality(const Ltype& left, const Ltype& right) const {
   bool ret;
 
   std::visit(
@@ -50,7 +53,7 @@ bool Interp::equality(const Ltype& left, const Ltype& right) {
           if constexpr (std::is_same_v<T, Lstring> || std::is_same_v<T, bool>)
             ret = x == y;
           else if constexpr (std::is_same_v<T, double>)
-            ret = floatcmp(x, y);
+            ret = floatEquality(x, y);
           else if constexpr (std::is_same_v<T, Lnil>)
             ret = 1;
           else if constexpr (std::is_same_v<T, FunPtr> ||
@@ -85,13 +88,13 @@ Ltype Interp::visit(const ExprBinary* expr) {
       break;
     case SLASH:
       checkNumberOperands(expr->oper, left, right);
-      if (floatcmp(std::get<double>(right), 0.0))
+      if (floatEquality(std::get<double>(right), 0.0))
         throw RuntimeError(expr->oper, "division by zero");
       ret = std::get<double>(left) / std::get<double>(right);
       break;
     case PERCENT:
       checkNumberOperands(expr->oper, left, right);
-      if (floatcmp(std::get<double>(right), 0.0))
+      if (floatEquality(std::get<double>(right), 0.0))
         throw RuntimeError(expr->oper, "division by zero");
 
       ret = std::fmod(std::get<double>(left), std::get<double>(right));
@@ -347,6 +350,7 @@ void Interp::interpret(const std::list<std::shared_ptr<const Stmt>>& list) {
   try {
     for (const std::shared_ptr<const Stmt>& s : list)
       execute(*s.get());
+    // lets through std::runtime_error, which is OOM and is unrecoverable
   } catch (RuntimeError& e) {
     handleRuntimeError(e);
   }
@@ -364,6 +368,7 @@ void Interp::execute(const StmtList& stmt, Env* setEnv) {
   for (const std::shared_ptr<const Stmt>& p : stmt.stmts) {
     try {
       execute(*p.get());
+      // control flow or any other, such as division by zero.
     } catch (std::exception& ex) {
       envp = save;
       throw;
@@ -541,8 +546,7 @@ void Interp::visit(const StmtClass& stmt) {
   std::unordered_map<std::string, Lfunc*> methods, staticMethods;
   std::size_t ctorArity;
   ClassPtr cptr;
-  Interp::Env* enclose;
-  Env* save;
+  Env *save, *enclose;
 
   ReclaimerCtx ctx(*this);
 
@@ -576,14 +580,15 @@ void Interp::visit(const StmtClass& stmt) {
 
   cptr = alloc<Lclass>(ctx, stmt.token.lexeme, ctorArity, methods,
                        staticMethods, superPtr, enclose);
-  if (superPtr != nullptr)
+  // does not restore if previous code throws an exception, but the only
+  // possible is OOM, which is unrecoverable
+  if (stmt.superExpr != nullptr)
     envp = save;
   envp->def(stmt.token, cptr);
 }
 
 void Interp::handleRuntimeError(RuntimeError& ex) {
   error(ex.token, ex.what());
-  hadRuntimeError = 1;
 }
 
 Interp::RuntimeError::RuntimeError(Token token, std::string what)
@@ -626,12 +631,13 @@ void Interp::runPrompt() {
       std::cout << '\n';
       break;
     }
+
     run(inputStr);
     hadError = 0;
   }
 }
 
-void Interp::runFile(std::string path) {
+int Interp::runFile(std::string path) {
   std::string input;
   std::ifstream inputFileStream(path, std::ios::binary);
 
@@ -641,22 +647,22 @@ void Interp::runFile(std::string path) {
   input = readAll(inputFileStream);
 
   run(input);
+  return hadError;
 }
 
 bool Interp::hadError;
-bool Interp::hadRuntimeError;
 
 void Interp::error(std::size_t lineNum, std::string msg) {
   report(lineNum, "", msg);
   hadError = 1;
 }
 
-void Interp::error(Token token, std::string msg) {
+void Interp::error(const Token& token, std::string msg) {
   report(token, msg);
   hadError = 1;
 }
 
-void Interp::report(Token token, std::string msg) {
+void Interp::report(const Token& token, std::string msg) {
   if (token.type == EOFF)
     report(token.lineNum, "at end", msg);
   else
@@ -671,7 +677,8 @@ void Interp::report(std::size_t lineNum,
 }
 
 Interp::Interp() : envp(&global), heapSize(0) {
-  envp->def(Token(Token::Type::EOFF, "clock", "clock", 0), Clock::get());
+  envp->def(Token(Token::Type::EOFF, "clock", "clock", 0),
+            Clock::get());
 }
 
 Interp::~Interp() {

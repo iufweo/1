@@ -1,0 +1,4 @@
+// expect: line 4: location: : nested multiline comments
+// expect: line 4: location: : nested multiline comments
+// expect: line 4: location: : unterminated comment
+/*/**/*/

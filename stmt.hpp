@@ -2,14 +2,17 @@
 #include <list>
 #include <memory>
 
-#include "expr.hpp"
+#include "expr_fwd.hpp"
+#include "functional.hpp"
 #include "stmt_visitor_fwd.hpp"
 #include "token.hpp"
 #include "uncopyable.hpp"
+
+#include "stmt_fwd.hpp"
+
 // needed only for StmtFun, which is pointed to by std::shared_ptr<Stmt or
 // StmtFun or Functional>
-struct Stmt : public StructUncopyable,
-              public std::enable_shared_from_this<Stmt> {
+struct Stmt : public Uncopyable, public std::enable_shared_from_this<Stmt> {
   Stmt() = default;
   virtual ~Stmt() = default;
 
@@ -20,7 +23,6 @@ struct StmtExpr : public Stmt {
   std::shared_ptr<const Expr> exprp;
 
   StmtExpr(std::shared_ptr<const Expr> exprp);
-  ~StmtExpr();
 
   StmtExpr() = delete;
 
@@ -31,7 +33,6 @@ struct StmtPrint : public Stmt {
   std::shared_ptr<const Expr> exprp;
 
   StmtPrint(std::shared_ptr<const Expr> exprp);
-  ~StmtPrint();
 
   StmtPrint() = delete;
 
@@ -43,7 +44,6 @@ struct StmtVar : public Stmt {
   std::shared_ptr<const Expr> exprp;
 
   StmtVar(Token token, std::shared_ptr<const Expr> exprp);
-  ~StmtVar();
 
   StmtVar() = delete;
 
@@ -84,7 +84,6 @@ struct StmtList : public Stmt {
   const std::list<std::shared_ptr<const Stmt>> stmts;
 
   StmtList(std::list<std::shared_ptr<const Stmt>>&& stms);
-  ~StmtList() = default;
 
   StmtList() = delete;
 
@@ -95,7 +94,6 @@ struct StmtLoopFlow : public Stmt {
   const Token token;
 
   StmtLoopFlow(Token token);
-  ~StmtLoopFlow() = default;
 
   StmtLoopFlow() = delete;
 
@@ -107,7 +105,6 @@ struct StmtReturn : public Stmt {
   const std::shared_ptr<const Expr> exprp;
 
   StmtReturn(Token token, std::shared_ptr<const Expr>&& exprp);
-  ~StmtReturn() = default;
 
   StmtReturn() = delete;
 
@@ -120,7 +117,6 @@ struct StmtFun : public Stmt, public Functional {
   StmtFun(Token token,
           std::list<Token> params,
           std::unique_ptr<const StmtList>&& listp);
-  ~StmtFun() = default;
   StmtFun() = delete;
 
   void accept(StmtVisitor& v) const final;
@@ -138,7 +134,6 @@ struct StmtClass : public Stmt {
             std::shared_ptr<const StmtFun> ctor,
             std::list<std::shared_ptr<const StmtFun>>&& methods,
             std::list<std::shared_ptr<const StmtFun>>&& staticMethods);
-  ~StmtClass() = default;
 
   StmtClass() = delete;
 

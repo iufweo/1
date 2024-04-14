@@ -1,0 +1,10 @@
+if (false) {
+	print 1;
+} else if (false) {
+	print 2;
+} else if (false) {
+	print 3;
+} else {
+	print 4;
+}
+// expect: 4

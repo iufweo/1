@@ -21,8 +21,8 @@ Tests can be run by executing
 ### Windows and MSYS2
 
 Only GNU C++ is supported with MSYS2.
-Code is known to build and function correctly when compiled with gcc-12
-on Windows 10.
+Code is known to build and function correctly when compiled with gcc-12, 13
+for Windows 10.
 
 	cmake -S path_to_source_directory/ -B path_to_build_directory/
 	cmake --build path_to_build_directory/
@@ -43,7 +43,9 @@ Select MSVC by specifying Visual Studio edition as the generator.
 	cmake -S path_to_source_directory/ -B path_to_build_directory/ -G "Visual Studio 16 2019"
 	cmake --build path_to_build_directory/ --config Release
 
-Building the test driver used for tests is not supported with MSVC.
+Tests can be run by executing
+
+	path_to_build_directory\testdriver.exe path_to_build_directory\lox1.exe path_to_source_directory\test\
 
 ## Usage
 

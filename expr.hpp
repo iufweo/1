@@ -5,13 +5,11 @@
 #include "expr_visitor_fwd.hpp"
 #include "functional.hpp"
 #include "ltype.hpp"
+#include "stmt_fwd.hpp"
 #include "token.hpp"
 #include "uncopyable.hpp"
-
-struct StmtList;
 // for ExprFun only
-struct Expr : public StructUncopyable,
-              public std::enable_shared_from_this<Expr> {
+struct Expr : public Uncopyable, public std::enable_shared_from_this<Expr> {
   Expr() = default;
   virtual ~Expr() = default;
 
@@ -26,7 +24,6 @@ struct ExprBinary : public Expr {
   ExprBinary(std::shared_ptr<const Expr> left,
              Token oper,
              std::shared_ptr<const Expr> right);
-  ~ExprBinary();
 
   ExprBinary() = delete;
 
@@ -37,7 +34,6 @@ struct ExprGrouping : public Expr {
   const std::shared_ptr<const Expr> exprp;
 
   ExprGrouping(std::shared_ptr<const Expr> exprp);
-  ~ExprGrouping();
 
   ExprGrouping() = delete;
 
@@ -48,7 +44,6 @@ struct ExprLiteral : public Expr {
   const Ltype value;
 
   ExprLiteral(Ltype value);
-  ~ExprLiteral() = default;
 
   ExprLiteral() = delete;
 
@@ -60,7 +55,6 @@ struct ExprUnary : public Expr {
   const std::shared_ptr<const Expr> exprp;
 
   ExprUnary(Token oper, const std::shared_ptr<const Expr> exprp);
-  ~ExprUnary();
 
   ExprUnary() = delete;
 
@@ -75,7 +69,6 @@ struct ExprTern : public Expr {
   ExprTern(std::shared_ptr<const Expr> cond,
            std::shared_ptr<const Expr> thenp,
            std::shared_ptr<const Expr> elsep);
-  ~ExprTern();
 
   ExprTern() = delete;
 
@@ -86,7 +79,6 @@ struct ExprVar : public Expr {
   const Token token;
 
   ExprVar(Token token);
-  ~ExprVar() = default;
 
   ExprVar() = delete;
 
@@ -98,7 +90,6 @@ struct ExprAssign : public Expr {
   const std::shared_ptr<const Expr> exprp;
 
   ExprAssign(Token token, std::shared_ptr<const Expr> exprp);
-  ~ExprAssign();
 
   ExprAssign() = delete;
 
@@ -113,7 +104,6 @@ struct ExprCall : public Expr {
   ExprCall(std::shared_ptr<const Expr> exprp,
            Token savedParen,
            std::list<std::shared_ptr<const Expr>>&& args);
-  ~ExprCall();
 
   ExprCall() = delete;
 
@@ -125,7 +115,6 @@ struct ExprGet : public Expr {
   const Token token;
 
   ExprGet(std::shared_ptr<const Expr> exprp, Token token);
-  ~ExprGet();
 
   ExprGet() = delete;
 
@@ -140,7 +129,6 @@ struct ExprSet : public Expr {
   ExprSet(std::shared_ptr<const ExprGet> get,
           Token token,
           std::shared_ptr<const Expr> exprp);
-  ~ExprSet();
 
   ExprSet() = delete;
 
@@ -151,7 +139,6 @@ struct ExprThis : public Expr {
   const Token token;
 
   ExprThis(Token token);
-  ~ExprThis() = default;
 
   ExprThis() = delete;
 
@@ -163,7 +150,6 @@ struct ExprSuper : public Expr {
   const Token method;
 
   ExprSuper(Token token, Token method);
-  ~ExprSuper() = default;
 
   ExprSuper() = delete;
 
@@ -178,7 +164,6 @@ struct ExprComma : public Expr {
   ExprComma(std::shared_ptr<const Expr> left,
             Token oper,
             std::shared_ptr<const Expr> right);
-  ~ExprComma();
 
   ExprComma() = delete;
 
@@ -193,7 +178,6 @@ struct ExprLogical : public Expr {
   ExprLogical(std::shared_ptr<const Expr> left,
               Token oper,
               std::shared_ptr<const Expr> right);
-  ~ExprLogical();
 
   ExprLogical() = delete;
 
@@ -203,7 +187,6 @@ struct ExprLogical : public Expr {
 struct ExprFun : public Expr, public Functional {
   ExprFun() = delete;
   ExprFun(std::list<Token> params, std::unique_ptr<const StmtList>&& listp);
-  ~ExprFun() = default;
 
   Ltype accept(ExprVisitor& v) const final;
 };

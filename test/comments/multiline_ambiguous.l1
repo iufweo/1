@@ -1,0 +1,3 @@
+// interpret as starting with //
+// expect: line 4: location: at end: expected ';' after expression
+3//**/4;

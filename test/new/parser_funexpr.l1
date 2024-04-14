@@ -1,0 +1,21 @@
+fun f() {
+	fun (x) {
+		fun g() {
+			x();
+		}
+		g();
+	}(fun () {});
+}
+f();
+
+fun f() {
+	fun () {
+		fun g()
+		}
+		g();
+	}
+}
+f();
+// expect: line 14: location: at '}': expected '{' at the start of function body
+// expect: line 17: location: at '}': expected ';' after expression
+// expect: line 22: location: at end: expected '}' for list
